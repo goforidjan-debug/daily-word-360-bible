@@ -5,32 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Word of Life — Powered by Daily Word 360</title>
 <meta name="description" content="Read the whole Bible in the World English Bible (WEB) translation, listen aloud, save favorite verses, write notes, and share verse cards — Word of Life, powered by Daily Word 360." />
-<meta name="theme-color" content="#0e2417" />
+<meta name="theme-color" content="#000000" />
 <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
 <style>
   :root {
-    --surface: #fffdf7;
-    --surface-alt: #f6f2e7;
-    --header-surface: #fdfaf2;
-    --text: #26332c;
+    --surface: #121212;
+    --surface-alt: #1b1b1b;
+    --header-surface: #161616;
+    --text: #f3eedd;
     --header-text: #f3eedd;
-    --dim: #5c6b61;
-    --header-dim: #c3cdb9;
-    --border: #e4dcc4;
-    --accent: #1f4d3f;
-    --gold: #b9975b;
-    --gold-deep: #a07d2c;
+    --dim: #a9a294;
+    --header-dim: #c3bfae;
+    --border: #3a3325;
+    --accent: #d9a94f;
+    --gold: #c9a45c;
+    --gold-deep: #d9a94f;
     --radius: 10px;
     --silk-bg:
-      linear-gradient(115deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 22%, rgba(0,0,0,0.16) 50%, rgba(255,255,255,0.04) 78%, rgba(255,255,255,0) 100%),
-      linear-gradient(135deg, #14503a 0%, #0e2417 55%, #0a1c11 100%);
+      linear-gradient(115deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0) 22%, rgba(0,0,0,0.45) 50%, rgba(255,255,255,0.035) 78%, rgba(255,255,255,0) 100%),
+      linear-gradient(135deg, #1a1a1a 0%, #000000 55%, #0b0b0b 100%);
   }
   html, body { margin: 0; padding: 0; }
   body {
     font-family: Georgia, 'Times New Roman', serif;
-    background-color: #0e2417;
+    background-color: #000000;
     background-image: var(--silk-bg);
     background-attachment: fixed;
     color: var(--text);
@@ -38,14 +38,27 @@
   }
   header.app { max-width: 42rem; margin: 0 auto; padding: 1rem 1rem 0.5rem; text-align: center; color: var(--header-text); }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  .lockup-panel { background: #000; border: 1px solid var(--gold); border-radius: 12px; padding: 0.6rem; max-width: 21rem; margin: 0 auto; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
-  .lockup-panel img { width: 100%; display: block; border-radius: 6px; }
+  .lockup-panel { background: #000; border: 1px solid var(--gold); border-radius: 12px; padding: 0.6rem; max-width: 21rem; margin: 0 auto; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); position: relative; overflow: hidden; }
+  .lockup-panel img { width: 100%; display: block; border-radius: 6px; animation: logo-gold-glow 6s ease-in-out infinite; }
+  /* Signature gold light pass (journal app): a diagonal band of gold light
+     sweeps across the logo panel on a gentle loop, clipped to the panel. */
+  .lockup-panel::after {
+    content: ""; position: absolute; inset: 0; border-radius: 12px;
+    background: linear-gradient(115deg, transparent 32%, rgba(255,236,180,0.32) 45%, rgba(255,250,225,0.7) 50%, rgba(255,236,180,0.32) 55%, transparent 68%);
+    transform: translateX(-130%); mix-blend-mode: screen; pointer-events: none;
+    animation: logo-light-pass 6s ease-in-out infinite;
+  }
+  @keyframes logo-light-pass { 0% { transform: translateX(-130%); } 30%, 100% { transform: translateX(130%); } }
+  @keyframes logo-gold-glow { 0%, 100% { filter: brightness(1); } 15% { filter: brightness(1.3) saturate(1.15); } }
+  @media (prefers-reduced-motion: reduce) {
+    .lockup-panel::after, .lockup-panel img { animation: none; }
+  }
   header.app .tagline { margin: 0.7rem 0 0; font-size: 0.95rem; color: var(--header-dim); font-style: italic; }
-  .web-badge { display: inline-block; margin-top: 0.3rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #0e2417; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
+  .web-badge { display: inline-block; margin-top: 0.3rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #000000; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
   #view { max-width: 42rem; margin: 0 auto; padding: 0 1rem calc(7.5rem + env(safe-area-inset-bottom)); }
   .view { display: none; }
   .view.active { display: block; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 0.75rem 0; box-shadow: 0 1px 3px rgba(20, 40, 25, 0.08); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 0.75rem 0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
   .card h2 { font-size: 1.05rem; margin: 0 0 0.5rem; color: var(--accent); }
   .card h3 { font-size: 0.95rem; margin: 0 0 0.4rem; color: var(--accent); }
   .label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 0; }
@@ -54,14 +67,14 @@
   .verse-text { font-size: 1.25rem; line-height: 1.55; color: var(--text); }
   .verse-ref { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-deep); }
   .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-  .cta-btn { appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #fdfaf2; border-radius: 999px; padding: 0.5rem 0.95rem; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+  .cta-btn { appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #1a1405; border-radius: 999px; padding: 0.5rem 0.95rem; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
   .cta-btn.ghost { background: transparent; color: var(--accent); }
-  .cta-btn.gold { background: var(--gold); border-color: var(--gold); color: #26332c; }
+  .cta-btn.gold { background: var(--gold); border-color: var(--gold); color: #1a1405; }
   .cta-btn:disabled { opacity: 0.5; cursor: default; }
   .link-btn { appearance: none; background: none; border: none; color: var(--accent); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.2rem; text-decoration: underline; }
   .link-btn.dim { color: var(--dim); }
   .icon-btn { appearance: none; background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--accent); font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.8rem; }
-  .icon-btn.on { background: var(--gold); border-color: var(--gold); color: #26332c; }
+  .icon-btn.on { background: var(--gold); border-color: var(--gold); color: #1a1405; }
   input[type="text"], input[type="search"], textarea, select {
     width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1rem; color: var(--text);
     background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem;
@@ -72,21 +85,21 @@
   @media (min-width: 640px) { .book-grid { grid-template-columns: repeat(4, 1fr); } }
   .book-btn { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.3rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; text-align: center; }
   .book-btn:hover { border-color: var(--gold); }
-  .book-btn.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--accent); }
+  .book-btn.sel { border-color: var(--gold); background: #241f10; font-weight: 700; color: var(--accent); }
   .testament-h { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 1rem 0 0.2rem; }
   .chip-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0; }
   .chip { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.3rem 0.7rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; }
-  .chip.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--accent); }
+  .chip.sel { border-color: var(--gold); background: #241f10; font-weight: 700; color: var(--accent); }
   .chapter-title { font-size: 1.3rem; color: var(--accent); margin: 0.5rem 0 0.25rem; }
   .verse { display: flex; gap: 0.6rem; padding: 0.45rem 0.3rem; border-radius: 6px; cursor: pointer; }
   .verse:hover { background: var(--surface-alt); }
-  .verse.speaking { background: #f3e6c2; box-shadow: inset 3px 0 0 var(--gold); }
+  .verse.speaking { background: #2b2208; box-shadow: inset 3px 0 0 var(--gold); }
   .verse.faved .vt::after { content: " \2665"; color: var(--gold-deep); }
   .vn { flex: none; width: 1.6rem; text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--gold-deep); padding-top: 0.2rem; }
   .vt { font-size: 1.08rem; line-height: 1.55; }
   .verse-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.1rem 0.3rem 0.6rem 2.2rem; }
   .verse-actions .icon-btn { font-size: 0.82rem; padding: 0.3rem 0.65rem; }
-  .audio-bar { background: #e9efe7; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .audio-bar { background: #161616; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
   .audio-bar .status { flex: 1; min-width: 8rem; font-size: 0.85rem; color: var(--accent); font-weight: 700; }
   .audio-bar select { width: auto; padding: 0.3rem 0.4rem; font-size: 0.85rem; }
   .search-results { margin-top: 0.6rem; }
@@ -113,12 +126,12 @@
   /* Notes */
   .note-item { border-top: 1px solid var(--border); padding: 0.7rem 0; }
   .note-item:first-of-type { border-top: none; }
-  .note-item .ref-chip { display: inline-block; font-size: 0.75rem; font-weight: 700; color: var(--accent); background: #e9efe7; border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.55rem; margin-bottom: 0.35rem; }
+  .note-item .ref-chip { display: inline-block; font-size: 0.75rem; font-weight: 700; color: var(--accent); background: #1c1a14; border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.55rem; margin-bottom: 0.35rem; }
   .note-item .nt { white-space: pre-wrap; font-size: 0.98rem; line-height: 1.5; }
   .note-item .nd { font-size: 0.78rem; color: var(--dim); margin-top: 0.3rem; }
   /* Music */
   .track-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; font-size: 0.95rem; color: var(--text); cursor: pointer; }
-  .track-row.playing { border-color: var(--gold); background: #f3e6c2; font-weight: 700; }
+  .track-row.playing { border-color: var(--gold); background: #2b2208; font-weight: 700; }
   .track-row .n { color: var(--gold-deep); font-weight: 700; }
   /* Tabs + music bar (journal app pattern: music bar sits above the tab bar) */
   nav.tabs { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom); }
@@ -132,13 +145,13 @@
   .music-bar input[type="range"] { width: 4.5rem; flex: none; accent-color: var(--accent); }
   .music-bar .mb-btn { appearance: none; background: none; border: none; font-size: 1.05rem; color: var(--accent); cursor: pointer; padding: 0.2rem 0.35rem; font-family: inherit; }
   /* Modal + toast */
-  .modal { position: fixed; inset: 0; z-index: 60; background: rgba(8, 26, 16, 0.88); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .modal { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, 0.88); display: flex; align-items: center; justify-content: center; padding: 1rem; }
   .modal-card { background: var(--surface); border-radius: 12px; max-width: 26rem; width: 100%; max-height: 92vh; overflow: auto; padding: 1rem; box-sizing: border-box; }
   .modal-card img { width: 100%; border-radius: 8px; display: block; }
   .modal-card h3 { margin: 0.2rem 0 0.5rem; color: var(--accent); }
   .modal-card textarea { margin-top: 0.5rem; }
   .timer-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-  #toast { position: fixed; left: 50%; bottom: 7.5rem; transform: translateX(-50%); z-index: 70; background: #0e2417; color: #f3eedd; border: 1px solid var(--gold); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.9rem; display: none; max-width: 90vw; text-align: center; }
+  #toast { position: fixed; left: 50%; bottom: 7.5rem; transform: translateX(-50%); z-index: 70; background: #000000; color: #f3eedd; border: 1px solid var(--gold); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.9rem; display: none; max-width: 90vw; text-align: center; }
   .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.6rem; }
   .quick-grid .cta-btn { width: 100%; }
   .about-box { font-size: 0.85rem; line-height: 1.55; color: var(--dim); }
@@ -220,8 +233,12 @@
           <option value="1.25">1.25&times;</option>
           <option value="1.5">1.5&times;</option>
         </select>
+        <label class="dim" for="audio-voice">Voice</label>
+        <select id="audio-voice">
+          <option value="">Device voices loading&hellip;</option>
+        </select>
       </div>
-      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. The voice depends on your phone or computer.</p>
+      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. Pick a voice above — the choices depend on your phone or computer.</p>
       <div id="chapter-verses"></div>
     </div>
   </section>
@@ -311,7 +328,7 @@
     lastReadSet: false,     // true once the reader has actually opened a chapter
     favorites: {},           // dateKey -> [{ref, text, book, chapter, verse}]
     notes: [],               // [{id, date, ref|null, text}]
-    settings: { musicTrack: 0, musicVolume: 40, audioRate: 1 }
+    settings: { musicTrack: 0, musicVolume: 40, audioRate: 1, voiceURI: "" }
   };
   function saveState() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
@@ -325,7 +342,7 @@
       if (d.lastReadSet) state.lastReadSet = true;
       if (d.favorites) state.favorites = d.favorites;
       if (Array.isArray(d.notes)) state.notes = d.notes;
-      if (d.settings) state.settings = Object.assign({ musicTrack: 0, musicVolume: 40, audioRate: 1 }, d.settings);
+      if (d.settings) state.settings = Object.assign({ musicTrack: 0, musicVolume: 40, audioRate: 1, voiceURI: "" }, d.settings);
     } catch (e) {}
   }
   /* ================= helpers ================= */
@@ -768,6 +785,7 @@
     var u = new SpeechSynthesisUtterance(text);
     u.lang = "en-US";
     u.rate = state.settings.audioRate || 1;
+    applyVoice(u);
     u.onend = function () { if (speakState.active && !speakState.paused) speakVerseAt(idx + 1); };
     u.onerror = function () { if (speakState.active) speakVerseAt(idx + 1); };
     speechSynthesis.speak(u);
@@ -797,6 +815,7 @@
     var u = new SpeechSynthesisUtterance(text);
     u.lang = "en-US";
     u.rate = state.settings.audioRate || 1;
+    applyVoice(u);
     speechSynthesis.speak(u);
     toast("Reading aloud with your device\u2019s own voice");
   }
@@ -826,9 +845,62 @@
   });
   if (!speechSupported) {
     $("audio-play").disabled = true;
+    $("audio-voice").disabled = true;
     $("audio-note").textContent = "Reading aloud is not available on this device or browser.";
   } else {
     $("audio-rate").value = String(state.settings.audioRate || 1);
+  }
+  /* ================= voice picker (device voices) =================
+     The choices come from the device itself — iPhone, Android and PC
+     each ship different voices — so list whatever speechSynthesis
+     offers and remember the pick in settings. Voices load late on
+     some devices, so refresh on voiceschanged too. */
+  var availableVoices = [];
+  function refreshVoices() {
+    if (!speechSupported) return;
+    var list = [];
+    try { list = speechSynthesis.getVoices() || []; } catch (e) { list = []; }
+    availableVoices = list;
+    var sel = $("audio-voice");
+    if (!sel) return;
+    var saved = state.settings.voiceURI || "";
+    sel.innerHTML = "";
+    var def = document.createElement("option");
+    def.value = "";
+    def.textContent = list.length ? "Device default voice" : "Device voices loading\u2026";
+    sel.appendChild(def);
+    list.forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v.voiceURI;
+      o.textContent = (v.name || "Voice") + (v.lang ? " (" + v.lang + ")" : "");
+      sel.appendChild(o);
+    });
+    var match = list.some(function (v) { return v.voiceURI === saved; });
+    sel.value = match ? saved : "";
+  }
+  function chosenVoice() {
+    var uri = state.settings.voiceURI || "";
+    if (!uri) return null;
+    for (var i = 0; i < availableVoices.length; i++) {
+      if (availableVoices[i].voiceURI === uri) return availableVoices[i];
+    }
+    return null;
+  }
+  function applyVoice(u) {
+    var v = chosenVoice();
+    if (v) { u.voice = v; u.lang = v.lang || u.lang; }
+  }
+  $("audio-voice").addEventListener("change", function () {
+    state.settings.voiceURI = $("audio-voice").value || "";
+    saveState();
+  });
+  if (speechSupported) {
+    refreshVoices();
+    if (typeof speechSynthesis.addEventListener === "function") {
+      speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+    } else {
+      speechSynthesis.onvoiceschanged = refreshVoices;
+    }
   }
 
   /* ================= calendar + favorites ================= */
@@ -1240,7 +1312,7 @@
       };
       img.onerror = function () {
         var g = ctx.createLinearGradient(0, 0, 0, 1350);
-        g.addColorStop(0, "#14503a"); g.addColorStop(0.55, "#0e2417"); g.addColorStop(1, "#0a1c11");
+        g.addColorStop(0, "#1a1a1a"); g.addColorStop(0.55, "#000000"); g.addColorStop(1, "#241c07");
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, 1080, 1350);
         finish();
