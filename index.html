@@ -11,17 +11,19 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
 <style>
   :root {
-    --surface: #121212;
-    --surface-alt: #1b1b1b;
-    --header-surface: #161616;
-    --text: #f3eedd;
+    /* Containers: transparent white over the black page (v1's cream cards,
+       made translucent so the black shows through); dark text on them. */
+    --surface: rgba(255,255,255,0.88);
+    --surface-alt: #f6f2e7;
+    --header-surface: rgba(255,255,255,0.92);
+    --text: #26332c;
     --header-text: #f3eedd;
-    --dim: #a9a294;
-    --header-dim: #c3bfae;
-    --border: #3a3325;
+    --dim: #5c6b61;
+    --header-dim: #c3cdb9;
+    --border: #e4dcc4;
     --accent: #d9a94f;
     --gold: #c9a45c;
-    --gold-deep: #d9a94f;
+    --gold-deep: #a07d2c;
     --radius: 10px;
     --silk-bg:
       linear-gradient(115deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0) 22%, rgba(0,0,0,0.45) 50%, rgba(255,255,255,0.035) 78%, rgba(255,255,255,0) 100%),
@@ -36,31 +38,29 @@
     color: var(--text);
     -webkit-text-size-adjust: 100%;
   }
-  header.app { max-width: 42rem; margin: 0 auto; padding: 1rem 1rem 0.5rem; text-align: center; color: var(--header-text); }
-  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  .lockup-panel { background: #000; border: 1px solid var(--gold); border-radius: 12px; padding: 0.6rem; max-width: 21rem; margin: 0 auto; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); position: relative; overflow: hidden; }
-  .lockup-panel img { width: 100%; display: block; border-radius: 6px; animation: logo-gold-glow 6s ease-in-out infinite; }
-  /* Signature gold light pass (journal app): a diagonal band of gold light
-     sweeps across the logo panel on a gentle loop, clipped to the panel. */
-  .lockup-panel::after {
-    content: ""; position: absolute; inset: 0; border-radius: 12px;
-    background: linear-gradient(115deg, transparent 32%, rgba(255,236,180,0.32) 45%, rgba(255,250,225,0.7) 50%, rgba(255,236,180,0.32) 55%, transparent 68%);
-    transform: translateX(-130%); mix-blend-mode: screen; pointer-events: none;
-    animation: logo-light-pass 6s ease-in-out infinite;
+  /* First-version compact header: small logo + title side by side. */
+  header.app {
+    max-width: 42rem; margin: 0 auto; padding: 1rem 1rem 0.5rem;
+    display: flex; align-items: center; gap: 0.9rem; color: var(--header-text);
   }
+  .logo-shine { position: relative; flex: none; width: 4rem; height: 4rem; overflow: hidden; border-radius: 8px; border: 1px solid var(--gold); margin: 0; }
+  @media (min-width: 640px) { .logo-shine { width: 5rem; height: 5rem; } }
+  .logo-shine img { width: 100%; height: 100%; object-fit: cover; display: block; animation: logo-gold-glow 6s ease-in-out infinite; }
+  /* Signature gold light pass: a diagonal band of gold light sweeps across
+     the small logo on a gentle loop, clipped to the logo tile. */
+  .logo-shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 32%, rgba(255,236,180,0.32) 45%, rgba(255,250,225,0.7) 50%, rgba(255,236,180,0.32) 55%, transparent 68%); transform: translateX(-130%); mix-blend-mode: screen; animation: logo-light-pass 6s ease-in-out infinite; pointer-events: none; }
   @keyframes logo-light-pass { 0% { transform: translateX(-130%); } 30%, 100% { transform: translateX(130%); } }
   @keyframes logo-gold-glow { 0%, 100% { filter: brightness(1); } 15% { filter: brightness(1.3) saturate(1.15); } }
-  @media (prefers-reduced-motion: reduce) {
-    .lockup-panel::after, .lockup-panel img { animation: none; }
-  }
-  header.app .tagline { margin: 0.7rem 0 0; font-size: 0.95rem; color: var(--header-dim); font-style: italic; }
+  @media (prefers-reduced-motion: reduce) { .logo-shine::after, .logo-shine img { animation: none; } }
+  header.app h1 { font-size: 1.35rem; line-height: 1.15; margin: 0; font-weight: 700; }
+  header.app p { margin: 0.15rem 0 0; font-size: 0.85rem; color: var(--header-dim); }
   .web-badge { display: inline-block; margin-top: 0.3rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #000000; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
   #view { max-width: 42rem; margin: 0 auto; padding: 0 1rem calc(7.5rem + env(safe-area-inset-bottom)); }
   .view { display: none; }
   .view.active { display: block; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 0.75rem 0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
-  .card h2 { font-size: 1.05rem; margin: 0 0 0.5rem; color: var(--accent); }
-  .card h3 { font-size: 0.95rem; margin: 0 0 0.4rem; color: var(--accent); }
+  .card h2 { font-size: 1.05rem; margin: 0 0 0.5rem; color: var(--gold-deep); }
+  .card h3 { font-size: 0.95rem; margin: 0 0 0.4rem; color: var(--gold-deep); }
   .label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 0; }
   .gold-rule { width: 52px; border: none; border-top: 2px solid var(--gold); margin: 0.75rem 0; }
   .dim { color: var(--dim); font-size: 0.85rem; line-height: 1.5; }
@@ -68,12 +68,12 @@
   .verse-ref { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-deep); }
   .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
   .cta-btn { appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #1a1405; border-radius: 999px; padding: 0.5rem 0.95rem; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
-  .cta-btn.ghost { background: transparent; color: var(--accent); }
+  .cta-btn.ghost { background: transparent; color: var(--gold-deep); }
   .cta-btn.gold { background: var(--gold); border-color: var(--gold); color: #1a1405; }
   .cta-btn:disabled { opacity: 0.5; cursor: default; }
-  .link-btn { appearance: none; background: none; border: none; color: var(--accent); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.2rem; text-decoration: underline; }
+  .link-btn { appearance: none; background: none; border: none; color: var(--gold-deep); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.2rem; text-decoration: underline; }
   .link-btn.dim { color: var(--dim); }
-  .icon-btn { appearance: none; background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--accent); font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.8rem; }
+  .icon-btn { appearance: none; background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--gold-deep); font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.8rem; }
   .icon-btn.on { background: var(--gold); border-color: var(--gold); color: #1a1405; }
   input[type="text"], input[type="search"], textarea, select {
     width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1rem; color: var(--text);
@@ -85,30 +85,30 @@
   @media (min-width: 640px) { .book-grid { grid-template-columns: repeat(4, 1fr); } }
   .book-btn { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.3rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; text-align: center; }
   .book-btn:hover { border-color: var(--gold); }
-  .book-btn.sel { border-color: var(--gold); background: #241f10; font-weight: 700; color: var(--accent); }
+  .book-btn.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--gold-deep); }
   .testament-h { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 1rem 0 0.2rem; }
   .chip-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0; }
   .chip { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.3rem 0.7rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; }
-  .chip.sel { border-color: var(--gold); background: #241f10; font-weight: 700; color: var(--accent); }
-  .chapter-title { font-size: 1.3rem; color: var(--accent); margin: 0.5rem 0 0.25rem; }
+  .chip.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--gold-deep); }
+  .chapter-title { font-size: 1.3rem; color: var(--gold-deep); margin: 0.5rem 0 0.25rem; }
   .verse { display: flex; gap: 0.6rem; padding: 0.45rem 0.3rem; border-radius: 6px; cursor: pointer; }
   .verse:hover { background: var(--surface-alt); }
-  .verse.speaking { background: #2b2208; box-shadow: inset 3px 0 0 var(--gold); }
+  .verse.speaking { background: #f3e6c2; box-shadow: inset 3px 0 0 var(--gold); }
   .verse.faved .vt::after { content: " \2665"; color: var(--gold-deep); }
   .vn { flex: none; width: 1.6rem; text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--gold-deep); padding-top: 0.2rem; }
   .vt { font-size: 1.08rem; line-height: 1.55; }
   .verse-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.1rem 0.3rem 0.6rem 2.2rem; }
   .verse-actions .icon-btn { font-size: 0.82rem; padding: 0.3rem 0.65rem; }
-  .audio-bar { background: #161616; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-  .audio-bar .status { flex: 1; min-width: 8rem; font-size: 0.85rem; color: var(--accent); font-weight: 700; }
+  .audio-bar { background: #e9efe7; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .audio-bar .status { flex: 1; min-width: 8rem; font-size: 0.85rem; color: var(--gold-deep); font-weight: 700; }
   .audio-bar select { width: auto; padding: 0.3rem 0.4rem; font-size: 0.85rem; }
   .search-results { margin-top: 0.6rem; }
   .search-hit { display: block; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; cursor: pointer; }
-  .search-hit .r { font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+  .search-hit .r { font-weight: 700; color: var(--gold-deep); font-size: 0.9rem; }
   .search-hit .t { color: var(--text); font-size: 0.92rem; line-height: 1.45; margin-top: 0.15rem; }
   /* Calendar */
   .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0.5rem 0; }
-  .cal-head h3 { margin: 0; font-size: 1.05rem; color: var(--accent); }
+  .cal-head h3 { margin: 0; font-size: 1.05rem; color: var(--gold-deep); }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.3rem; }
   .cal-dow { text-align: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--dim); padding: 0.25rem 0; }
   .cal-day { appearance: none; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; background: var(--header-surface); font-family: inherit; cursor: pointer; padding: 0.15rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
@@ -126,29 +126,29 @@
   /* Notes */
   .note-item { border-top: 1px solid var(--border); padding: 0.7rem 0; }
   .note-item:first-of-type { border-top: none; }
-  .note-item .ref-chip { display: inline-block; font-size: 0.75rem; font-weight: 700; color: var(--accent); background: #1c1a14; border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.55rem; margin-bottom: 0.35rem; }
+  .note-item .ref-chip { display: inline-block; font-size: 0.75rem; font-weight: 700; color: var(--gold-deep); background: #e9efe7; border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.55rem; margin-bottom: 0.35rem; }
   .note-item .nt { white-space: pre-wrap; font-size: 0.98rem; line-height: 1.5; }
   .note-item .nd { font-size: 0.78rem; color: var(--dim); margin-top: 0.3rem; }
   /* Music */
   .track-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; font-size: 0.95rem; color: var(--text); cursor: pointer; }
-  .track-row.playing { border-color: var(--gold); background: #2b2208; font-weight: 700; }
+  .track-row.playing { border-color: var(--gold); background: #f3e6c2; font-weight: 700; }
   .track-row .n { color: var(--gold-deep); font-weight: 700; }
   /* Tabs + music bar (journal app pattern: music bar sits above the tab bar) */
   nav.tabs { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom); }
   nav.tabs .inner { max-width: 42rem; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
   nav.tabs button { appearance: none; background: none; border: none; font-family: inherit; font-size: 0.72rem; font-weight: 700; color: var(--dim); padding: 0.6rem 0.1rem 0.55rem; cursor: pointer; }
   nav.tabs button .ic { display: block; font-size: 1.15rem; line-height: 1.1; }
-  nav.tabs button.sel { color: var(--accent); }
+  nav.tabs button.sel { color: var(--gold-deep); }
   .music-bar { position: fixed; left: 0; right: 0; z-index: 9; background: var(--surface); border-top: 1px solid var(--border); }
   .music-bar .inner { max-width: 42rem; margin: 0 auto; display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; }
   .music-bar .track-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; color: var(--text); background: none; border: none; text-align: left; padding: 0; font-family: inherit; cursor: pointer; }
   .music-bar input[type="range"] { width: 4.5rem; flex: none; accent-color: var(--accent); }
-  .music-bar .mb-btn { appearance: none; background: none; border: none; font-size: 1.05rem; color: var(--accent); cursor: pointer; padding: 0.2rem 0.35rem; font-family: inherit; }
+  .music-bar .mb-btn { appearance: none; background: none; border: none; font-size: 1.05rem; color: var(--gold-deep); cursor: pointer; padding: 0.2rem 0.35rem; font-family: inherit; }
   /* Modal + toast */
   .modal { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, 0.88); display: flex; align-items: center; justify-content: center; padding: 1rem; }
   .modal-card { background: var(--surface); border-radius: 12px; max-width: 26rem; width: 100%; max-height: 92vh; overflow: auto; padding: 1rem; box-sizing: border-box; }
   .modal-card img { width: 100%; border-radius: 8px; display: block; }
-  .modal-card h3 { margin: 0.2rem 0 0.5rem; color: var(--accent); }
+  .modal-card h3 { margin: 0.2rem 0 0.5rem; color: var(--gold-deep); }
   .modal-card textarea { margin-top: 0.5rem; }
   .timer-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
   #toast { position: fixed; left: 50%; bottom: 7.5rem; transform: translateX(-50%); z-index: 70; background: #000000; color: #f3eedd; border: 1px solid var(--gold); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.9rem; display: none; max-width: 90vw; text-align: center; }
@@ -160,10 +160,12 @@
 </head>
 <body>
 <header class="app">
-  <h1 class="sr-only">Word of Life — Powered by Daily Word 360</h1>
-  <figure class="lockup-panel" aria-label="Word of Life logo"><img src="logo-lockup.png" alt="Word of Life — Powered by Daily Word 360" /></figure>
-  <p class="tagline">Read it, hear it, keep it close.</p>
-  <span class="web-badge">World English Bible &middot; WEB</span>
+  <figure class="logo-shine" aria-label="Word of Life logo"><img src="icon-512.png" alt="Word of Life logo" /></figure>
+  <div>
+    <h1>Word of Life</h1>
+    <p>Read it, hear it, keep it close.</p>
+    <span class="web-badge">World English Bible &middot; WEB</span>
+  </div>
 </header>
 
 <main id="view">
