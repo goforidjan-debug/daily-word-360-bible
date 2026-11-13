@@ -245,7 +245,7 @@
       <h2>About Word of Life</h2>
       <p><b>Word of Life</b> is the Bible app from Daily Word 360 — the whole Bible to read and listen to, with notes, favorite verses, and shareable verse cards.</p>
       <p><b>Translation:</b> the World English Bible (WEB) — a public-domain translation in modern English. The daily devotional posts use the NIV, but the NIV is copyrighted and cannot be included in a full Bible, so this app uses the WEB.</p>
-      <p><b>Listening:</b> the &ldquo;Listen&rdquo; button reads aloud with your own device&rsquo;s voice (Web Speech). It is not a recording — the voice and quality depend on your phone or computer. When a chapter finishes, the next chapter starts playing automatically — across book boundaries, until the end of the Bible — unless you switch Auto-play off in the Listen controls.</p>
+      <p><b>Listening:</b> the &ldquo;Listen&rdquo; button reads aloud with your own device&rsquo;s voice (Web Speech). It is not a recording — the voice and quality depend on your phone or computer. Before each chapter, the voice announces it first — &ldquo;Genesis Chapter 1&rdquo;, then just &ldquo;Chapter 2&rdquo; for the next chapter, and a new book in full, like &ldquo;Exodus Chapter 1&rdquo; — so it feels like listening to an audiobook. When a chapter finishes, the next chapter starts playing automatically — across book boundaries, until the end of the Bible — unless you switch Auto-play off in the Listen controls.</p>
       <p><b>Saving:</b> your favorites and notes are saved on this device only (in this browser). They do not sync to another phone or computer — use the backup download in Notes to keep a copy.</p>
     </div>
   </section>
@@ -874,6 +874,15 @@
     u.onerror = function () { if (speakState.active) speakVerseAt(idx + 1); };
     speechSynthesis.speak(u);
   }
+  /* Chapter announcement, like an audiobook: the first chapter of a
+     book is announced in full ("Genesis Chapter 1"); later chapters
+     in the same book are just the chapter number ("Chapter 2"); a new
+     book is announced in full again ("Exodus Chapter 1"). */
+  function chapterIntroText(slug, chapter) {
+    var b = bookBySlug(slug);
+    if (!b) return "";
+    return chapter === 1 ? b.name + " Chapter 1" : "Chapter " + chapter;
+  }
   function speakChapter(slug, chapter, fromVerse) {
     if (!speechSupported) { toast("Reading aloud is not supported on this device."); return; }
     stopSpeech();
@@ -891,7 +900,21 @@
       speakState.verse = fromVerse || 1;
       $("audio-play").innerHTML = "&#10074;&#10074; Pause";
       $("audio-stop").disabled = false;
-      setTimeout(function () { speakVerseAt((fromVerse || 1) - 1); }, 120);
+      /* Announce the chapter first, as its own utterance (no verse
+         highlight on it), then read the verses. Same voice and speed
+         as the verses. */
+      setTimeout(function () {
+        if (!speakState.active) return;
+        var introText = chapterIntroText(slug, chapter);
+        if (!speakState.paused) $("audio-status").textContent = introText;
+        var intro = new SpeechSynthesisUtterance(introText);
+        intro.lang = "en-US";
+        intro.rate = state.settings.audioRate || 1;
+        applyVoice(intro);
+        intro.onend = function () { if (speakState.active && !speakState.paused) speakVerseAt((fromVerse || 1) - 1); };
+        intro.onerror = function () { if (speakState.active) speakVerseAt((fromVerse || 1) - 1); };
+        speechSynthesis.speak(intro);
+      }, 120);
     });
   }
   function speakSingle(ref, text) {
