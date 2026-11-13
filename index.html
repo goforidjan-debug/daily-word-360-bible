@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Daily Word 360 Bible</title>
-<meta name="description" content="Read the whole Bible in the World English Bible (WEB) translation, listen aloud, save favorite verses, write notes, and share verse cards — Daily Word 360." />
+<title>Word of Life — Powered by Daily Word 360</title>
+<meta name="description" content="Read the whole Bible in the World English Bible (WEB) translation, listen aloud, save favorite verses, write notes, and share verse cards — Word of Life, powered by Daily Word 360." />
 <meta name="theme-color" content="#0e2417" />
 <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
@@ -36,19 +36,11 @@
     color: var(--text);
     -webkit-text-size-adjust: 100%;
   }
-  header.app {
-    max-width: 42rem; margin: 0 auto; padding: 1rem 1rem 0.5rem;
-    display: flex; align-items: center; gap: 0.9rem; color: var(--header-text);
-  }
-  .logo-shine { position: relative; flex: none; width: 4rem; height: 4rem; overflow: hidden; border-radius: 8px; border: 1px solid var(--gold); margin: 0; }
-  @media (min-width: 640px) { .logo-shine { width: 5rem; height: 5rem; } }
-  .logo-shine img { width: 100%; height: 100%; object-fit: cover; display: block; animation: logo-gold-glow 6s ease-in-out infinite; }
-  .logo-shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%); transform: translateX(-130%); animation: logo-light-pass 6s ease-in-out infinite; pointer-events: none; }
-  @keyframes logo-light-pass { 0% { transform: translateX(-130%); } 30%, 100% { transform: translateX(130%); } }
-  @keyframes logo-gold-glow { 0%, 100% { filter: brightness(1); } 15% { filter: brightness(1.35) saturate(1.15); } }
-  @media (prefers-reduced-motion: reduce) { .logo-shine::after, .logo-shine img { animation: none; } }
-  header.app h1 { font-size: 1.35rem; line-height: 1.15; margin: 0; font-weight: 700; }
-  header.app p { margin: 0.15rem 0 0; font-size: 0.85rem; color: var(--header-dim); }
+  header.app { max-width: 42rem; margin: 0 auto; padding: 1rem 1rem 0.5rem; text-align: center; color: var(--header-text); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .lockup-panel { background: #000; border: 1px solid var(--gold); border-radius: 12px; padding: 0.6rem; max-width: 21rem; margin: 0 auto; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
+  .lockup-panel img { width: 100%; display: block; border-radius: 6px; }
+  header.app .tagline { margin: 0.7rem 0 0; font-size: 0.95rem; color: var(--header-dim); font-style: italic; }
   .web-badge { display: inline-block; margin-top: 0.3rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #0e2417; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
   #view { max-width: 42rem; margin: 0 auto; padding: 0 1rem calc(7.5rem + env(safe-area-inset-bottom)); }
   .view { display: none; }
@@ -155,12 +147,10 @@
 </head>
 <body>
 <header class="app">
-  <figure class="logo-shine" aria-label="Daily Word 360 logo"><img src="logo.jpg" alt="Daily Word 360 logo" /></figure>
-  <div>
-    <h1>Daily Word 360 Bible</h1>
-    <p>Read it, hear it, keep it close.</p>
-    <span class="web-badge">World English Bible &middot; WEB</span>
-  </div>
+  <h1 class="sr-only">Word of Life — Powered by Daily Word 360</h1>
+  <figure class="lockup-panel" aria-label="Word of Life logo"><img src="logo-lockup.png" alt="Word of Life — Powered by Daily Word 360" /></figure>
+  <p class="tagline">Read it, hear it, keep it close.</p>
+  <span class="web-badge">World English Bible &middot; WEB</span>
 </header>
 
 <main id="view">
@@ -190,7 +180,8 @@
       </div>
     </div>
     <div class="card about-box">
-      <h2>About this Bible</h2>
+      <h2>About Word of Life</h2>
+      <p><b>Word of Life</b> is the Bible app from Daily Word 360 — the whole Bible to read and listen to, with notes, favorite verses, and shareable verse cards.</p>
       <p><b>Translation:</b> the World English Bible (WEB) — a public-domain translation in modern English. The daily devotional posts use the NIV, but the NIV is copyrighted and cannot be included in a full Bible, so this app uses the WEB.</p>
       <p><b>Listening:</b> the &ldquo;Listen&rdquo; button reads aloud with your own device&rsquo;s voice (Web Speech). It is not a recording — the voice and quality depend on your phone or computer.</p>
       <p><b>Saving:</b> your favorites and notes are saved on this device only (in this browser). They do not sync to another phone or computer — use the backup download in Notes to keep a copy.</p>
@@ -1041,7 +1032,7 @@
   });
   $("note-export").addEventListener("click", function () {
     var data = {
-      app: "Daily Word 360 Bible",
+      app: "Word of Life",
       exportedAt: new Date().toISOString(),
       favorites: state.favorites,
       notes: state.notes,
@@ -1050,7 +1041,7 @@
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "daily-word-360-bible-backup.json";
+    a.download = "word-of-life-backup.json";
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
@@ -1207,7 +1198,7 @@
         ctx.fillStyle = "#e8c97e";
         ctx.font = "700 30px Georgia, 'Times New Roman', serif";
         ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
-        ctx.fillText("D A I L Y   W O R D   3 6 0", 540, 108);
+        ctx.fillText("W O R D   O F   L I F E", 540, 108);
         ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
         /* verse, white serif with a deep dark shadow (devotional style) */
         var size = 62, lines = [];
@@ -1294,9 +1285,9 @@
     mkBtn("Share", "cta-btn", function () {
       if (!shareCanvas) return;
       shareCanvas.toBlob(function (blob) {
-        var file = new File([blob], "daily-word-360-verse.png", { type: "image/png" });
+        var file = new File([blob], "word-of-life-verse.png", { type: "image/png" });
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          navigator.share({ files: [file], title: "Daily Word 360 — " + shareRef }).catch(function () {});
+          navigator.share({ files: [file], title: "Word of Life — " + shareRef }).catch(function () {});
         } else {
           downloadCard();
           toast("Sharing is not available here — the image was downloaded instead");
