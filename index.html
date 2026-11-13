@@ -137,6 +137,8 @@
   .audio-bar { background: #e9efe7; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
   .audio-bar .status { flex: 1; min-width: 8rem; font-size: 0.85rem; color: var(--gold-deep); font-weight: 700; }
   .audio-bar select { width: auto; padding: 0.3rem 0.4rem; font-size: 0.85rem; }
+  .audio-bar .autoplay { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; color: var(--text); cursor: pointer; white-space: nowrap; }
+  .audio-bar .autoplay input { accent-color: var(--gold-deep); width: 1rem; height: 1rem; margin: 0; }
   .search-results { margin-top: 0.6rem; }
   .search-hit { display: block; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; cursor: pointer; }
   .search-hit .r { font-weight: 700; color: var(--gold-deep); font-size: 0.9rem; }
@@ -243,7 +245,7 @@
       <h2>About Word of Life</h2>
       <p><b>Word of Life</b> is the Bible app from Daily Word 360 — the whole Bible to read and listen to, with notes, favorite verses, and shareable verse cards.</p>
       <p><b>Translation:</b> the World English Bible (WEB) — a public-domain translation in modern English. The daily devotional posts use the NIV, but the NIV is copyrighted and cannot be included in a full Bible, so this app uses the WEB.</p>
-      <p><b>Listening:</b> the &ldquo;Listen&rdquo; button reads aloud with your own device&rsquo;s voice (Web Speech). It is not a recording — the voice and quality depend on your phone or computer.</p>
+      <p><b>Listening:</b> the &ldquo;Listen&rdquo; button reads aloud with your own device&rsquo;s voice (Web Speech). It is not a recording — the voice and quality depend on your phone or computer. When a chapter finishes, the next chapter starts playing automatically — across book boundaries, until the end of the Bible — unless you switch Auto-play off in the Listen controls.</p>
       <p><b>Saving:</b> your favorites and notes are saved on this device only (in this browser). They do not sync to another phone or computer — use the backup download in Notes to keep a copy.</p>
     </div>
   </section>
@@ -284,6 +286,7 @@
         <select id="audio-voice">
           <option value="">Device voices loading&hellip;</option>
         </select>
+        <label class="autoplay" for="audio-autoplay"><input type="checkbox" id="audio-autoplay" checked /> Auto-play next chapter</label>
       </div>
       <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. Pick a voice above — the choices depend on your phone or computer.</p>
       <div id="chapter-verses"></div>
@@ -375,7 +378,7 @@
     lastReadSet: false,     // true once the reader has actually opened a chapter
     favorites: {},           // dateKey -> [{ref, text, book, chapter, verse}]
     notes: [],               // [{id, date, ref|null, text}]
-    settings: { musicTrack: 0, musicVolume: 40, audioRate: 1, voiceURI: "" }
+    settings: { musicTrack: 0, musicVolume: 40, audioRate: 1, voiceURI: "", autoAdvance: true }
   };
   function saveState() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
@@ -389,7 +392,7 @@
       if (d.lastReadSet) state.lastReadSet = true;
       if (d.favorites) state.favorites = d.favorites;
       if (Array.isArray(d.notes)) state.notes = d.notes;
-      if (d.settings) state.settings = Object.assign({ musicTrack: 0, musicVolume: 40, audioRate: 1, voiceURI: "" }, d.settings);
+      if (d.settings) state.settings = Object.assign({ musicTrack: 0, musicVolume: 40, audioRate: 1, voiceURI: "", autoAdvance: true }, d.settings);
     } catch (e) {}
   }
   /* ================= helpers ================= */
@@ -813,9 +816,40 @@
     var stop = $("audio-stop");
     if (stop) stop.disabled = true;
   }
+  /* Next chapter in reading order: the following chapter of the same
+     book, or chapter 1 of the next book; null at the end of the Bible
+     (Revelation 22). BOOKS is in canonical order. */
+  function nextChapterRef(slug, chapter) {
+    for (var i = 0; i < BOOKS.length; i++) {
+      if (BOOKS[i].slug === slug) {
+        if (chapter < BOOKS[i].chapters) return { slug: slug, chapter: chapter + 1, name: BOOKS[i].name };
+        if (i + 1 < BOOKS.length) return { slug: BOOKS[i + 1].slug, chapter: 1, name: BOOKS[i + 1].name };
+        return null;
+      }
+    }
+    return null;
+  }
   function speakVerseAt(idx) {
     if (!speakState.active) return;
     if (idx >= speakState.verses.length) {
+      /* Chapter played through to its natural end. With auto-play on,
+         move to the next chapter (across book boundaries) and keep
+         reading; at the very end of the Bible stop gracefully. */
+      if (state.settings.autoAdvance !== false) {
+        var next = nextChapterRef(speakState.slug, speakState.chapter);
+        if (next) {
+          $("audio-status").textContent = "Moving to " + next.name + " " + next.chapter + "\u2026";
+          openChapter(next.slug, next.chapter);
+          speakChapter(next.slug, next.chapter, 1);
+          return;
+        }
+        speakState.active = false;
+        clearSpeaking();
+        $("audio-status").textContent = "You've reached the end of the Bible.";
+        $("audio-play").innerHTML = "&#9654; Listen";
+        $("audio-stop").disabled = true;
+        return;
+      }
       speakState.active = false;
       clearSpeaking();
       $("audio-status").textContent = speakState.bookName + " " + speakState.chapter + " — finished";
@@ -828,7 +862,10 @@
     clearSpeaking();
     var row = document.querySelector('.verse[data-verse="' + speakState.verse + '"]');
     if (row) { row.classList.add("speaking"); row.scrollIntoView({ block: "nearest" }); }
-    $("audio-status").textContent = "Reading " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + " of " + speakState.verses.length;
+    /* Keep a "Paused — …" status if the user paused during the short gap
+       before this verse started (e.g. right as a chapter auto-advanced);
+       the utterance still queues and plays on Resume. */
+    if (!speakState.paused) $("audio-status").textContent = "Reading " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + " of " + speakState.verses.length;
     var u = new SpeechSynthesisUtterance(text);
     u.lang = "en-US";
     u.rate = state.settings.audioRate || 1;
@@ -851,6 +888,7 @@
       speakState.chapter = chapter;
       speakState.verses = verses;
       speakState.bookName = book.name;
+      speakState.verse = fromVerse || 1;
       $("audio-play").innerHTML = "&#10074;&#10074; Pause";
       $("audio-stop").disabled = false;
       setTimeout(function () { speakVerseAt((fromVerse || 1) - 1); }, 120);
@@ -890,12 +928,18 @@
     state.settings.audioRate = parseFloat($("audio-rate").value) || 1;
     saveState();
   });
+  $("audio-autoplay").addEventListener("change", function () {
+    state.settings.autoAdvance = $("audio-autoplay").checked;
+    saveState();
+  });
   if (!speechSupported) {
     $("audio-play").disabled = true;
     $("audio-voice").disabled = true;
+    $("audio-autoplay").disabled = true;
     $("audio-note").textContent = "Reading aloud is not available on this device or browser.";
   } else {
     $("audio-rate").value = String(state.settings.audioRate || 1);
+    $("audio-autoplay").checked = state.settings.autoAdvance !== false;
   }
   /* ================= voice picker (device voices) =================
      The choices come from the device itself — iPhone, Android and PC
@@ -1443,6 +1487,12 @@
   }
   /* ================= init ================= */
   loadState();
+  /* The Listen controls were initialised before loadState() ran, so their
+     first sync used the defaults — re-apply the saved settings here, or
+     the Auto-play checkbox (and Speed) would show the default instead of
+     the saved choice for returning users. */
+  $("audio-rate").value = String(state.settings.audioRate || 1);
+  $("audio-autoplay").checked = state.settings.autoAdvance !== false;
   fetchJSON("books.json").then(function (idx) {
     BOOKS = Array.isArray(idx) ? idx : (idx.books || []);
     renderBookPicker();
