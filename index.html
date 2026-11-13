@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Daily Word 360 Bible</title>
+<meta name="description" content="Read the whole Bible in the World English Bible (WEB) translation, listen aloud, save favorite verses, write notes, and share verse cards — Daily Word 360." />
+<meta name="theme-color" content="#0e2417" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<style>
+  :root {
+    --surface: #fffdf7;
+    --surface-alt: #f6f2e7;
+    --header-surface: #fdfaf2;
+    --text: #26332c;
+    --header-text: #f3eedd;
+    --dim: #5c6b61;
+    --header-dim: #c3cdb9;
+    --border: #e4dcc4;
+    --accent: #1f4d3f;
+    --gold: #b9975b;
+    --gold-deep: #a07d2c;
+    --radius: 10px;
+    --silk-bg:
+      linear-gradient(115deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 22%, rgba(0,0,0,0.16) 50%, rgba(255,255,255,0.04) 78%, rgba(255,255,255,0) 100%),
+      linear-gradient(135deg, #14503a 0%, #0e2417 55%, #0a1c11 100%);
+  }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background-color: #0e2417;
+    background-image: var(--silk-bg);
+    background-attachment: fixed;
+    color: var(--text);
+    -webkit-text-size-adjust: 100%;
+  }
+  header.app {
+    max-width: 42rem; margin: 0 auto; padding: 1rem 1rem 0.5rem;
+    display: flex; align-items: center; gap: 0.9rem; color: var(--header-text);
+  }
+  .logo-shine { position: relative; flex: none; width: 4rem; height: 4rem; overflow: hidden; border-radius: 8px; border: 1px solid var(--gold); margin: 0; }
+  @media (min-width: 640px) { .logo-shine { width: 5rem; height: 5rem; } }
+  .logo-shine img { width: 100%; height: 100%; object-fit: cover; display: block; animation: logo-gold-glow 6s ease-in-out infinite; }
+  .logo-shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%); transform: translateX(-130%); animation: logo-light-pass 6s ease-in-out infinite; pointer-events: none; }
+  @keyframes logo-light-pass { 0% { transform: translateX(-130%); } 30%, 100% { transform: translateX(130%); } }
+  @keyframes logo-gold-glow { 0%, 100% { filter: brightness(1); } 15% { filter: brightness(1.35) saturate(1.15); } }
+  @media (prefers-reduced-motion: reduce) { .logo-shine::after, .logo-shine img { animation: none; } }
+  header.app h1 { font-size: 1.35rem; line-height: 1.15; margin: 0; font-weight: 700; }
+  header.app p { margin: 0.15rem 0 0; font-size: 0.85rem; color: var(--header-dim); }
+  .web-badge { display: inline-block; margin-top: 0.3rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #0e2417; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
+  #view { max-width: 42rem; margin: 0 auto; padding: 0 1rem calc(7.5rem + env(safe-area-inset-bottom)); }
+  .view { display: none; }
+  .view.active { display: block; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 0.75rem 0; box-shadow: 0 1px 3px rgba(20, 40, 25, 0.08); }
+  .card h2 { font-size: 1.05rem; margin: 0 0 0.5rem; color: var(--accent); }
+  .card h3 { font-size: 0.95rem; margin: 0 0 0.4rem; color: var(--accent); }
+  .label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 0; }
+  .gold-rule { width: 52px; border: none; border-top: 2px solid var(--gold); margin: 0.75rem 0; }
+  .dim { color: var(--dim); font-size: 0.85rem; line-height: 1.5; }
+  .verse-text { font-size: 1.25rem; line-height: 1.55; color: var(--text); }
+  .verse-ref { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-deep); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+  .cta-btn { appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #fdfaf2; border-radius: 999px; padding: 0.5rem 0.95rem; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+  .cta-btn.ghost { background: transparent; color: var(--accent); }
+  .cta-btn.gold { background: var(--gold); border-color: var(--gold); color: #26332c; }
+  .cta-btn:disabled { opacity: 0.5; cursor: default; }
+  .link-btn { appearance: none; background: none; border: none; color: var(--accent); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.2rem; text-decoration: underline; }
+  .link-btn.dim { color: var(--dim); }
+  .icon-btn { appearance: none; background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--accent); font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.8rem; }
+  .icon-btn.on { background: var(--gold); border-color: var(--gold); color: #26332c; }
+  input[type="text"], input[type="search"], textarea, select {
+    width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1rem; color: var(--text);
+    background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem;
+  }
+  textarea { min-height: 5.5rem; resize: vertical; line-height: 1.5; }
+  /* Read view */
+  .book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-top: 0.6rem; }
+  @media (min-width: 640px) { .book-grid { grid-template-columns: repeat(4, 1fr); } }
+  .book-btn { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.3rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; text-align: center; }
+  .book-btn:hover { border-color: var(--gold); }
+  .book-btn.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--accent); }
+  .testament-h { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 1rem 0 0.2rem; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0; }
+  .chip { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.3rem 0.7rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; }
+  .chip.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--accent); }
+  .chapter-title { font-size: 1.3rem; color: var(--accent); margin: 0.5rem 0 0.25rem; }
+  .verse { display: flex; gap: 0.6rem; padding: 0.45rem 0.3rem; border-radius: 6px; cursor: pointer; }
+  .verse:hover { background: var(--surface-alt); }
+  .verse.speaking { background: #f3e6c2; box-shadow: inset 3px 0 0 var(--gold); }
+  .verse.faved .vt::after { content: " \2665"; color: var(--gold-deep); }
+  .vn { flex: none; width: 1.6rem; text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--gold-deep); padding-top: 0.2rem; }
+  .vt { font-size: 1.08rem; line-height: 1.55; }
+  .verse-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.1rem 0.3rem 0.6rem 2.2rem; }
+  .verse-actions .icon-btn { font-size: 0.82rem; padding: 0.3rem 0.65rem; }
+  .audio-bar { background: #e9efe7; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .audio-bar .status { flex: 1; min-width: 8rem; font-size: 0.85rem; color: var(--accent); font-weight: 700; }
+  .audio-bar select { width: auto; padding: 0.3rem 0.4rem; font-size: 0.85rem; }
+  .search-results { margin-top: 0.6rem; }
+  .search-hit { display: block; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; cursor: pointer; }
+  .search-hit .r { font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+  .search-hit .t { color: var(--text); font-size: 0.92rem; line-height: 1.45; margin-top: 0.15rem; }
+  /* Calendar */
+  .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0.5rem 0; }
+  .cal-head h3 { margin: 0; font-size: 1.05rem; color: var(--accent); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.3rem; }
+  .cal-dow { text-align: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--dim); padding: 0.25rem 0; }
+  .cal-day { appearance: none; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; background: var(--header-surface); font-family: inherit; cursor: pointer; padding: 0.15rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+  .cal-day .d { font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.1; }
+  .cal-day .s { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; color: var(--gold-deep); line-height: 1.2; }
+  .cal-day.other { opacity: 0.35; }
+  .cal-day.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .cal-day.saved { background: linear-gradient(160deg, #f6dfa0, #d9a94f); border-color: var(--gold-deep); }
+  .cal-day.saved .d { color: #3d2f10; }
+  .cal-day.saved .s { color: #3d2f10; }
+  .cal-day.sel { box-shadow: 0 0 0 2px var(--accent); }
+  .fav-item { border-top: 1px solid var(--border); padding: 0.7rem 0; }
+  .fav-item:first-of-type { border-top: none; }
+  .fav-item .ft { font-size: 1.02rem; line-height: 1.5; }
+  /* Notes */
+  .note-item { border-top: 1px solid var(--border); padding: 0.7rem 0; }
+  .note-item:first-of-type { border-top: none; }
+  .note-item .ref-chip { display: inline-block; font-size: 0.75rem; font-weight: 700; color: var(--accent); background: #e9efe7; border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.55rem; margin-bottom: 0.35rem; }
+  .note-item .nt { white-space: pre-wrap; font-size: 0.98rem; line-height: 1.5; }
+  .note-item .nd { font-size: 0.78rem; color: var(--dim); margin-top: 0.3rem; }
+  /* Music */
+  .track-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; font-size: 0.95rem; color: var(--text); cursor: pointer; }
+  .track-row.playing { border-color: var(--gold); background: #f3e6c2; font-weight: 700; }
+  .track-row .n { color: var(--gold-deep); font-weight: 700; }
+  /* Tabs + music bar (journal app pattern: music bar sits above the tab bar) */
+  nav.tabs { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom); }
+  nav.tabs .inner { max-width: 42rem; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
+  nav.tabs button { appearance: none; background: none; border: none; font-family: inherit; font-size: 0.72rem; font-weight: 700; color: var(--dim); padding: 0.6rem 0.1rem 0.55rem; cursor: pointer; }
+  nav.tabs button .ic { display: block; font-size: 1.15rem; line-height: 1.1; }
+  nav.tabs button.sel { color: var(--accent); }
+  .music-bar { position: fixed; left: 0; right: 0; z-index: 9; background: var(--surface); border-top: 1px solid var(--border); }
+  .music-bar .inner { max-width: 42rem; margin: 0 auto; display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; }
+  .music-bar .track-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; color: var(--text); background: none; border: none; text-align: left; padding: 0; font-family: inherit; cursor: pointer; }
+  .music-bar input[type="range"] { width: 4.5rem; flex: none; accent-color: var(--accent); }
+  .music-bar .mb-btn { appearance: none; background: none; border: none; font-size: 1.05rem; color: var(--accent); cursor: pointer; padding: 0.2rem 0.35rem; font-family: inherit; }
+  /* Modal + toast */
+  .modal { position: fixed; inset: 0; z-index: 60; background: rgba(8, 26, 16, 0.88); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-card { background: var(--surface); border-radius: 12px; max-width: 26rem; width: 100%; max-height: 92vh; overflow: auto; padding: 1rem; box-sizing: border-box; }
+  .modal-card img { width: 100%; border-radius: 8px; display: block; }
+  .modal-card h3 { margin: 0.2rem 0 0.5rem; color: var(--accent); }
+  .modal-card textarea { margin-top: 0.5rem; }
+  .timer-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+  #toast { position: fixed; left: 50%; bottom: 7.5rem; transform: translateX(-50%); z-index: 70; background: #0e2417; color: #f3eedd; border: 1px solid var(--gold); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.9rem; display: none; max-width: 90vw; text-align: center; }
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.6rem; }
+  .quick-grid .cta-btn { width: 100%; }
+  .about-box { font-size: 0.85rem; line-height: 1.55; color: var(--dim); }
+  .about-box b { color: var(--text); }
+</style>
+</head>
+<body>
+<header class="app">
+  <figure class="logo-shine" aria-label="Daily Word 360 logo"><img src="logo.jpg" alt="Daily Word 360 logo" /></figure>
+  <div>
+    <h1>Daily Word 360 Bible</h1>
+    <p>Read it, hear it, keep it close.</p>
+    <span class="web-badge">World English Bible &middot; WEB</span>
+  </div>
+</header>
+
+<main id="view">
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="card" id="daily-card">
+      <p class="label">Today&rsquo;s verse</p>
+      <hr class="gold-rule" />
+      <p class="verse-text" id="daily-text">Loading today&rsquo;s verse&hellip;</p>
+      <p class="verse-ref" id="daily-ref"></p>
+      <div class="btn-row">
+        <button type="button" class="cta-btn" id="daily-listen">&#9654; Listen</button>
+        <button type="button" class="cta-btn ghost" id="daily-share">Share as card</button>
+        <button type="button" class="icon-btn" id="daily-fav" aria-label="Save as favorite">&#9825; Save</button>
+        <button type="button" class="link-btn" id="daily-open">Open in Read</button>
+      </div>
+    </div>
+    <div class="card" id="continue-card">
+      <h2>Continue reading</h2>
+      <p class="dim" id="continue-label">Start with Genesis 1.</p>
+      <div class="btn-row"><button type="button" class="cta-btn gold" id="continue-btn">Continue reading</button></div>
+      <div class="quick-grid">
+        <button type="button" class="cta-btn ghost" data-goto="read">Read the Bible</button>
+        <button type="button" class="cta-btn ghost" data-goto="calendar">Favorites calendar</button>
+        <button type="button" class="cta-btn ghost" data-goto="notes">My notes</button>
+        <button type="button" class="cta-btn ghost" data-goto="music">Calm music</button>
+      </div>
+    </div>
+    <div class="card about-box">
+      <h2>About this Bible</h2>
+      <p><b>Translation:</b> the World English Bible (WEB) — a public-domain translation in modern English. The daily devotional posts use the NIV, but the NIV is copyrighted and cannot be included in a full Bible, so this app uses the WEB.</p>
+      <p><b>Listening:</b> the &ldquo;Listen&rdquo; button reads aloud with your own device&rsquo;s voice (Web Speech). It is not a recording — the voice and quality depend on your phone or computer.</p>
+      <p><b>Saving:</b> your favorites and notes are saved on this device only (in this browser). They do not sync to another phone or computer — use the backup download in Notes to keep a copy.</p>
+    </div>
+  </section>
+
+  <!-- READ -->
+  <section class="view" id="view-read">
+    <div class="card">
+      <h2>Read the Bible</h2>
+      <input type="search" id="search-box" placeholder="Search every verse&hellip; (e.g. shepherd)" autocomplete="off" />
+      <p class="dim" id="search-status">Preparing search&hellip;</p>
+      <div class="search-results" id="search-results"></div>
+      <div id="book-picker">
+        <p class="testament-h">Old Testament</p>
+        <div class="book-grid" id="books-ot"></div>
+        <p class="testament-h">New Testament</p>
+        <div class="book-grid" id="books-nt"></div>
+      </div>
+      <div id="chapter-picker" hidden>
+        <div class="btn-row"><button type="button" class="link-btn" id="back-to-books">&larr; All books</button></div>
+        <h3 class="chapter-title" id="chapter-book-name"></h3>
+        <div class="chip-row" id="chapter-chips"></div>
+      </div>
+    </div>
+    <div class="card" id="chapter-card" hidden>
+      <h3 class="chapter-title" id="chapter-title"></h3>
+      <div class="audio-bar" id="audio-bar">
+        <span class="status" id="audio-status">Listen to this chapter</span>
+        <button type="button" class="cta-btn" id="audio-play">&#9654; Listen</button>
+        <button type="button" class="cta-btn ghost" id="audio-stop" disabled>Stop</button>
+        <label class="dim" for="audio-rate">Speed</label>
+        <select id="audio-rate">
+          <option value="0.75">0.75&times;</option>
+          <option value="1" selected>1&times;</option>
+          <option value="1.25">1.25&times;</option>
+          <option value="1.5">1.5&times;</option>
+        </select>
+      </div>
+      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. The voice depends on your phone or computer.</p>
+      <div id="chapter-verses"></div>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="view" id="view-calendar">
+    <div class="card">
+      <h2>Favorites calendar</h2>
+      <p class="dim">Tap the heart on any verse to save it. Days with saved verses turn gold.</p>
+      <div class="cal-head">
+        <button type="button" class="icon-btn" id="cal-prev" aria-label="Previous month">&larr;</button>
+        <h3 id="cal-title"></h3>
+        <button type="button" class="icon-btn" id="cal-next" aria-label="Next month">&rarr;</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="btn-row"><button type="button" class="link-btn" id="cal-today">Go to today</button></div>
+    </div>
+    <div class="card" id="day-card" hidden>
+      <h2 id="day-title"></h2>
+      <div id="day-favs"></div>
+    </div>
+    <div class="card">
+      <h2>All favorites</h2>
+      <p class="dim" id="fav-count"></p>
+      <div id="all-favs"></div>
+    </div>
+  </section>
+
+  <!-- NOTES -->
+  <section class="view" id="view-notes">
+    <div class="card">
+      <h2>My notes</h2>
+      <p class="dim">Notes are saved on this device only. They do not sync to another phone or computer.</p>
+      <label class="label" for="note-text">Write a note</label>
+      <textarea id="note-text" placeholder="What is God saying to you today?"></textarea>
+      <div class="btn-row">
+        <button type="button" class="cta-btn" id="note-save">Save note</button>
+        <button type="button" class="cta-btn ghost" id="note-export">Download backup (JSON)</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>All notes</h2>
+      <div id="notes-list"></div>
+    </div>
+  </section>
+
+  <!-- MUSIC -->
+  <section class="view" id="view-music">
+    <div class="card">
+      <h2>Calm music</h2>
+      <p class="dim">The same twelve gentle instrumentals from the Daily Word 360 prayer journal. Tap a track to play it; the player keeps going at the bottom of the screen and moves to the next track when one ends.</p>
+      <div id="track-list"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="inner">
+    <button type="button" data-tab="home" class="sel"><span class="ic">&#8962;</span>Home</button>
+    <button type="button" data-tab="read"><span class="ic">&#128214;</span>Read</button>
+    <button type="button" data-tab="calendar"><span class="ic">&#128197;</span>Calendar</button>
+    <button type="button" data-tab="notes"><span class="ic">&#9998;&#65039;</span>Notes</button>
+    <button type="button" data-tab="music"><span class="ic">&#9834;</span>Music</button>
+  </div>
+</nav>
+
+<div class="music-bar" id="music-bar" hidden>
+  <div class="inner">
+    <button type="button" class="mb-btn" id="music-prev" aria-label="Previous track">&#9198;</button>
+    <button type="button" class="mb-btn" id="music-play" aria-label="Play or pause music">&#9654;</button>
+    <button type="button" class="mb-btn" id="music-next" aria-label="Next track">&#9197;</button>
+    <button type="button" class="track-name" id="music-name">Music</button>
+    <input type="range" id="music-vol" min="0" max="100" value="40" aria-label="Music volume" />
+  </div>
+</div>
+
+<audio id="music-audio" preload="none"></audio>
+<div id="toast" role="status"></div>
+<div id="modal-root"></div>
+<script>
+(function () {
+  "use strict";
+  /* ================= state (localStorage key dw360-bible-v1) ================= */
+  var STORE_KEY = "dw360-bible-v1";
+  var state = {
+    lastRead: { book: "genesis", chapter: 1 },
+    lastReadSet: false,     // true once the reader has actually opened a chapter
+    favorites: {},           // dateKey -> [{ref, text, book, chapter, verse}]
+    notes: [],               // [{id, date, ref|null, text}]
+    settings: { musicTrack: 0, musicVolume: 40, audioRate: 1 }
+  };
+  function saveState() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      if (d.lastRead) state.lastRead = d.lastRead;
+      if (d.lastReadSet) state.lastReadSet = true;
+      if (d.favorites) state.favorites = d.favorites;
+      if (Array.isArray(d.notes)) state.notes = d.notes;
+      if (d.settings) state.settings = Object.assign({ musicTrack: 0, musicVolume: 40, audioRate: 1 }, d.settings);
+    } catch (e) {}
+  }
+  /* ================= helpers ================= */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function dateKey(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function dayOfYear(d) {
+    var start = new Date(d.getFullYear(), 0, 0);
+    return Math.floor((d - start) / 86400000);
+  }
+  function fmtLong(iso) {
+    var p = iso.split("-");
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  }
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.style.display = "none"; }, 2600);
+  }
+  /* ================= data ================= */
+  var MUSIC_TRACKS = [
+    { title: "Linen and Light", file: "music/Linen_and_Light.mp3" },
+    { title: "Before The Sun Returns", file: "music/Before_The_Sun_Returns.mp3" },
+    { title: "Dawn Over the Cathedral", file: "music/Dawn_Over_the_Cathedral.mp3" },
+    { title: "Where the Light Rests (Longer version)", file: "music/Where_the_Light_Rests_Longer.mp3" },
+    { title: "Stillness in the Sanctuary", file: "music/Stillness_in_the_Sanctuary.mp3" },
+    { title: "Sanctuary of Light", file: "music/Sanctuary_of_Light.mp3" },
+    { title: "Sunlight on Stone", file: "music/Sunlight_on_Stone.mp3" },
+    { title: "The Unspoken Altar", file: "music/The_Unspoken_Altar.mp3" },
+    { title: "Where the Light Settles", file: "music/Where_The_Light_Settles.mp3" },
+    { title: "Where the Heart Rests", file: "music/Where_The_Heart_Rests.mp3" },
+    { title: "Beneath the Painted Glass", file: "music/Beneath_The_Painted_Glass.mp3" },
+    { title: "Sunlight on the Pews", file: "music/Sunlight_on_the_Pews.mp3" }
+  ];
+  var BOOKS = [];            // index from books.json
+  var BOOK_CACHE = {};       // slug -> book data
+  var ALL_VERSES = null;     // search index: [{ref, text, book, chapter, verse}]
+  var SEARCH_READY = false;
+  function fetchJSON(url) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error("Could not load " + url);
+      return r.json();
+    });
+  }
+  function loadBook(slug) {
+    if (BOOK_CACHE[slug]) return Promise.resolve(BOOK_CACHE[slug]);
+    return fetchJSON("books/" + slug + ".json").then(function (b) {
+      BOOK_CACHE[slug] = b;
+      return b;
+    });
+  }
+  function bookBySlug(slug) {
+    for (var i = 0; i < BOOKS.length; i++) if (BOOKS[i].slug === slug) return BOOKS[i];
+    return null;
+  }
+  function verseRef(bookName, chapter, verse) { return bookName + " " + chapter + ":" + verse; }
+  /* ================= tabs ================= */
+  var currentTab = "home";
+  function showTab(name) {
+    currentTab = name;
+    stopSpeech();
+    var views = document.querySelectorAll(".view");
+    for (var i = 0; i < views.length; i++) views[i].classList.toggle("active", views[i].id === "view-" + name);
+    var btns = document.querySelectorAll("nav.tabs button");
+    for (var j = 0; j < btns.length; j++) btns[j].classList.toggle("sel", btns[j].getAttribute("data-tab") === name);
+    if (name === "calendar") renderCalendar();
+    if (name === "notes") renderNotes();
+    if (name === "music") renderTrackList();
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("nav.tabs button").forEach(function (b) {
+    b.addEventListener("click", function () { showTab(b.getAttribute("data-tab")); });
+  });
+  document.querySelectorAll("[data-goto]").forEach(function (b) {
+    b.addEventListener("click", function () { showTab(b.getAttribute("data-goto")); });
+  });
+  /* ================= home: daily verse ================= */
+  var DAILY = [];
+  var dailyEntry = null; // {ref, text, book, chapter, verse}
+  function renderDaily() {
+    var idx = dayOfYear(new Date()) % (DAILY.length || 1);
+    var d = DAILY[idx];
+    if (!d) return;
+    var m = d.ref.match(/^(.*) (\d+):(\d+)$/);
+    dailyEntry = { ref: d.ref, text: d.text, book: null, chapter: m ? +m[2] : 1, verse: m ? +m[3] : 1 };
+    if (m) {
+      var slug = m[1].toLowerCase().replace(/[^a-z0-9]+/g, "");
+      dailyEntry.book = slug;
+    }
+    $("daily-text").textContent = "\u201C" + d.text + "\u201D";
+    $("daily-ref").textContent = d.ref + "  (WEB)";
+    refreshFavButton($("daily-fav"), d.ref);
+  }
+  function renderContinue() {
+    var lr = state.lastRead;
+    var b = bookBySlug(lr.book);
+    $("continue-label").textContent = (!state.lastReadSet ? "Start with Genesis 1." : (b ? ("Last open: " + b.name + " " + lr.chapter + ".") : "Start with Genesis 1."));
+  }
+  $("continue-btn").addEventListener("click", function () {
+    openChapter(state.lastRead.book, state.lastRead.chapter);
+    showTab("read");
+  });
+  $("daily-open").addEventListener("click", function () {
+    if (!dailyEntry) return;
+    openChapter(dailyEntry.book, dailyEntry.chapter, dailyEntry.verse);
+    showTab("read");
+  });
+  $("daily-share").addEventListener("click", function () {
+    if (dailyEntry) openShareCard(dailyEntry.ref, dailyEntry.text);
+  });
+  $("daily-listen").addEventListener("click", function () {
+    if (dailyEntry) speakSingle(dailyEntry.ref, dailyEntry.text);
+  });
+  $("daily-fav").addEventListener("click", function () {
+    if (!dailyEntry) return;
+    toggleFavorite(dailyEntry);
+    refreshFavButton($("daily-fav"), dailyEntry.ref);
+  });
+  /* ================= favorites ================= */
+  function isFavorited(ref) {
+    var keys = Object.keys(state.favorites);
+    for (var i = 0; i < keys.length; i++) {
+      var list = state.favorites[keys[i]];
+      for (var j = 0; j < list.length; j++) if (list[j].ref === ref) return keys[i];
+    }
+    return null;
+  }
+  function toggleFavorite(entry) {
+    var existing = isFavorited(entry.ref);
+    if (existing) {
+      state.favorites[existing] = state.favorites[existing].filter(function (e) { return e.ref !== entry.ref; });
+      if (!state.favorites[existing].length) delete state.favorites[existing];
+      saveState();
+      toast("Removed from favorites");
+      return false;
+    }
+    var key = dateKey(new Date());
+    if (!state.favorites[key]) state.favorites[key] = [];
+    state.favorites[key].push({ ref: entry.ref, text: entry.text, book: entry.book, chapter: entry.chapter, verse: entry.verse });
+    saveState();
+    toast("Saved to favorites \u2665");
+    return true;
+  }
+  function refreshFavButton(btn, ref) {
+    if (!btn) return;
+    var fav = !!isFavorited(ref);
+    btn.classList.toggle("on", fav);
+    btn.innerHTML = fav ? "\u2665 Saved" : "\u2661 Save";
+  }
+  function totalFavorites() {
+    var n = 0, keys = Object.keys(state.favorites);
+    for (var i = 0; i < keys.length; i++) n += state.favorites[keys[i]].length;
+    return n;
+  }
+  /* ================= read: books + chapters ================= */
+  var currentBook = null, currentChapter = 0;
+  function renderBookPicker() {
+    var ot = $("books-ot"), nt = $("books-nt");
+    ot.innerHTML = ""; nt.innerHTML = "";
+    BOOKS.forEach(function (b) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "book-btn";
+      btn.textContent = b.name;
+      btn.addEventListener("click", function () { openBook(b.slug); });
+      (b.testament === "OT" ? ot : nt).appendChild(btn);
+    });
+  }
+  function openBook(slug) {
+    var b = bookBySlug(slug);
+    if (!b) return;
+    currentBook = b;
+    $("book-picker").hidden = true;
+    $("chapter-picker").hidden = false;
+    $("chapter-book-name").textContent = b.name + " — choose a chapter";
+    var chips = $("chapter-chips");
+    chips.innerHTML = "";
+    for (var c = 1; c <= b.chapters; c++) {
+      (function (ch) {
+        var chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.textContent = ch;
+        chip.addEventListener("click", function () { openChapter(slug, ch); });
+        chips.appendChild(chip);
+      })(c);
+    }
+    $("chapter-card").hidden = true;
+    stopSpeech();
+  }
+  $("back-to-books").addEventListener("click", function () {
+    $("book-picker").hidden = false;
+    $("chapter-picker").hidden = true;
+    $("chapter-card").hidden = true;
+    stopSpeech();
+  });
+  function openChapter(slug, chapter, scrollVerse) {
+    var b = bookBySlug(slug);
+    if (!b) return;
+    currentBook = b;
+    currentChapter = chapter;
+    state.lastRead = { book: slug, chapter: chapter };
+    state.lastReadSet = true;
+    saveState();
+    renderContinue();
+    $("book-picker").hidden = true;
+    $("chapter-picker").hidden = false;
+    $("chapter-book-name").textContent = b.name + " — choose a chapter";
+    var chips = $("chapter-chips");
+    chips.innerHTML = "";
+    for (var c = 1; c <= b.chapters; c++) {
+      (function (ch) {
+        var chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip" + (ch === chapter ? " sel" : "");
+        chip.textContent = ch;
+        chip.addEventListener("click", function () { openChapter(slug, ch); });
+        chips.appendChild(chip);
+      })(c);
+    }
+    $("chapter-card").hidden = false;
+    $("chapter-title").textContent = b.name + " " + chapter + "  (WEB)";
+    stopSpeech();
+    loadBook(slug).then(function (book) {
+      renderChapterVerses(book, chapter);
+      if (scrollVerse) {
+        var row = document.querySelector('.verse[data-verse="' + scrollVerse + '"]');
+        if (row) row.scrollIntoView({ block: "center" });
+      }
+    }).catch(function () {
+      $("chapter-verses").innerHTML = '<p class="dim">This chapter could not be loaded. Please check your connection and try again.</p>';
+    });
+  }
+  function renderChapterVerses(book, chapter) {
+    var box = $("chapter-verses");
+    box.innerHTML = "";
+    var verses = book.chapters[chapter - 1] || [];
+    verses.forEach(function (text, i) {
+      var vnum = i + 1;
+      var ref = verseRef(book.name, chapter, vnum);
+      var row = document.createElement("div");
+      row.className = "verse" + (isFavorited(ref) ? " faved" : "");
+      row.setAttribute("data-verse", vnum);
+      row.setAttribute("data-ref", ref);
+      row.innerHTML = '<span class="vn">' + vnum + '</span><span class="vt">' + esc(text) + '</span>';
+      row.addEventListener("click", function () { toggleVerseActions(row, { ref: ref, text: text, book: book.name.toLowerCase().replace(/[^a-z0-9]+/g, ""), chapter: chapter, verse: vnum }); });
+      box.appendChild(row);
+    });
+    $("audio-status").textContent = book.name + " " + chapter + " — " + verses.length + " verses";
+  }
+  var openActionsRow = null, openActionsRef = null;
+  function toggleVerseActions(row, entry) {
+    if (openActionsRow && openActionsRef === entry.ref) { openActionsRow.remove(); openActionsRow = null; openActionsRef = null; return; }
+    if (openActionsRow) { openActionsRow.remove(); openActionsRow = null; openActionsRef = null; }
+    var div = document.createElement("div");
+    div.className = "verse-actions";
+    var fav = isFavorited(entry.ref);
+    div.innerHTML =
+      '<button type="button" class="icon-btn fav-btn' + (fav ? " on" : "") + '">' + (fav ? "\u2665 Saved" : "\u2661 Favorite") + '</button>' +
+      '<button type="button" class="icon-btn listen-btn">&#9654; Listen from here</button>' +
+      '<button type="button" class="icon-btn share-btn">Share card</button>' +
+      '<button type="button" class="icon-btn note-btn">Add note</button>';
+    div.querySelector(".fav-btn").addEventListener("click", function (e) {
+      e.stopPropagation();
+      var nowFav = toggleFavorite(entry);
+      div.querySelector(".fav-btn").classList.toggle("on", nowFav);
+      div.querySelector(".fav-btn").innerHTML = nowFav ? "\u2665 Saved" : "\u2661 Favorite";
+      row.classList.toggle("faved", nowFav);
+      if (dailyEntry && dailyEntry.ref === entry.ref) refreshFavButton($("daily-fav"), entry.ref);
+    });
+    div.querySelector(".listen-btn").addEventListener("click", function (e) {
+      e.stopPropagation();
+      speakChapter(currentBook.slug, currentChapter, entry.verse);
+    });
+    div.querySelector(".share-btn").addEventListener("click", function (e) {
+      e.stopPropagation();
+      openShareCard(entry.ref, entry.text);
+    });
+    div.querySelector(".note-btn").addEventListener("click", function (e) {
+      e.stopPropagation();
+      openNoteEditor(entry.ref, "");
+    });
+    row.after(div);
+    openActionsRow = div;
+    openActionsRef = entry.ref;
+  }
+  /* ================= search ================= */
+  function startSearchPrefetch() {
+    var done = 0;
+    $("search-status").textContent = "Preparing search\u2026 0/" + BOOKS.length + " books";
+    var queue = BOOKS.slice();
+    var workers = [];
+    function next() {
+      if (!queue.length) return Promise.resolve();
+      var b = queue.shift();
+      return loadBook(b.slug).then(function (book) {
+        done++;
+        $("search-status").textContent = "Preparing search\u2026 " + done + "/" + BOOKS.length + " books";
+      }).catch(function () { done++; }).then(next);
+    }
+    for (var i = 0; i < 6; i++) workers.push(next());
+    Promise.all(workers).then(function () {
+      ALL_VERSES = [];
+      BOOKS.forEach(function (b) {
+        var book = BOOK_CACHE[b.slug];
+        if (!book) return;
+        book.chapters.forEach(function (ch, ci) {
+          ch.forEach(function (text, vi) {
+            ALL_VERSES.push({ ref: verseRef(book.name, ci + 1, vi + 1), text: text, book: b.slug, chapter: ci + 1, verse: vi + 1 });
+          });
+        });
+      });
+      SEARCH_READY = true;
+      $("search-status").textContent = "Search is ready — " + ALL_VERSES.length.toLocaleString() + " verses.";
+    });
+  }
+  var searchTimer = null;
+  $("search-box").addEventListener("input", function () {
+    clearTimeout(searchTimer);
+    var q = $("search-box").value.trim();
+    var box = $("search-results");
+    if (q.length < 3) { box.innerHTML = ""; return; }
+    searchTimer = setTimeout(function () { runSearch(q); }, 250);
+  });
+  function runSearch(q) {
+    var box = $("search-results");
+    if (!SEARCH_READY) {
+      box.innerHTML = '<p class="dim">Still preparing the search index — try again in a moment.</p>';
+      return;
+    }
+    var needle = q.toLowerCase();
+    var hits = [];
+    for (var i = 0; i < ALL_VERSES.length && hits.length < 50; i++) {
+      if (ALL_VERSES[i].text.toLowerCase().indexOf(needle) !== -1 || ALL_VERSES[i].ref.toLowerCase().indexOf(needle) !== -1) hits.push(ALL_VERSES[i]);
+    }
+    if (!hits.length) {
+      box.innerHTML = '<p class="dim">No verses found for &ldquo;' + esc(q) + '&rdquo;.</p>';
+      return;
+    }
+    box.innerHTML = "";
+    var head = document.createElement("p");
+    head.className = "dim";
+    head.textContent = hits.length + (hits.length >= 50 ? "+" : "") + " verse" + (hits.length === 1 ? "" : "s") + " found.";
+    box.appendChild(head);
+    hits.forEach(function (h) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "search-hit";
+      btn.innerHTML = '<span class="r">' + esc(h.ref) + ' (WEB)</span><div class="t">' + esc(h.text) + '</div>';
+      btn.addEventListener("click", function () {
+        $("search-box").value = "";
+        box.innerHTML = "";
+        openChapter(h.book, h.chapter, h.verse);
+      });
+      box.appendChild(btn);
+    });
+  }
+
+  /* ================= share-card scenes (21, all visibly different) ================= */
+  /* Add a scene: drop the file into scenes/ and add one line here.
+     New scenes from the weekly Monday batch get isNew: true (shown as
+     "NEW" under the card preview) until the next batch arrives. */
+  var SCENES = [
+    { file: "milky-way.jpg",           name: "Milky Way over a dark mountain ridge",        keys: ["night", "star", "dark", "heaven", "sky"] },
+    { file: "sunrise-fog.jpg",         name: "Sun bursting through fog over a dark ridge",  keys: ["light", "dawn", "morning", "new", "sunrise", "hope", "shine"] },
+    { file: "sunset-mountain.jpg",     name: "Golden sunset over rocky mountain peaks",     keys: ["sunset", "evening", "glory", "majesty", "mountain"] },
+    { file: "forest-stream.jpg",       name: "Sunlit stream winding through a mossy forest",keys: ["water", "peace", "rest", "stream", "refresh", "life", "still"] },
+    { file: "golden-field.jpg",        name: "Golden wheat field with a lone tree at sunset",keys: ["harvest", "field", "provision", "abundance"] },
+    { file: "aurora.jpg",              name: "Aurora over a snowy lake and mountains",      keys: ["night", "wonder", "heaven", "glory", "star"] },
+    { file: "misty-lake.jpg",          name: "Misty lake at dawn, golden light through fog",keys: ["peace", "still", "quiet", "morning", "calm", "comfort"] },
+    { file: "ocean-dusk.jpg",          name: "Ocean at dusk, waves against dark cliffs",    keys: ["sea", "deep", "storm", "refuge", "ocean"] },
+    { file: "forest-path.jpg",         name: "Quiet forest path at dusk (Ep 5)",            keys: ["walk", "way", "path", "journey", "guide"] },
+    { file: "ai-snowy-pines.jpg",      name: "Snowy pine forest in soft morning light",     keys: ["snow", "winter", "pure", "white", "still"] },
+    { file: "ai-desert-dunes.jpg",     name: "Desert dunes at golden hour",                 keys: ["desert", "wilderness", "journey", "thirst"] },
+    { file: "ai-waterfall-gorge.jpg",  name: "Waterfall in a green mossy gorge",            keys: ["water", "power", "refresh", "life", "river"] },
+    { file: "ai-ocean-sunrise.jpg",    name: "Calm ocean at sunrise, pink and gold sky",    keys: ["sea", "morning", "new", "hope", "dawn", "ocean"] },
+    { file: "ai-wildflower-dusk.jpg",  name: "Wildflower meadow at dusk, purple-pink sky",  keys: ["flower", "joy", "beauty", "meadow", "glad", "rejoice"] },
+    { file: "ai-blue-hour-peak.jpg",   name: "Snow-capped peak at blue hour, early stars",  keys: ["mountain", "strength", "high", "majesty", "rock"] },
+    { file: "ai-rain-lake-dusk.jpg",   name: "Gentle rain over a still lake at dusk",       keys: ["rain", "tear", "comfort", "quiet", "sorrow"] },
+    { file: "ai-autumn-forest.jpg",    name: "Golden autumn forest path",                   keys: ["autumn", "season", "change", "path", "walk"] },
+    { file: "ai-foggy-valley-dawn.jpg",name: "Green valley filled with dawn fog",           keys: ["valley", "morning", "hope", "fog", "dawn"] },
+    { file: "pool-lake-mountains.jpg", name: "Turquoise alpine lake beneath snowy cliffs",  keys: ["mountain", "lake", "strength", "majesty", "refuge"] },
+    { file: "pool-nainital-night.jpg",name: "Lakeside town glowing at twilight",           keys: ["evening", "town", "home", "light", "peace"] },
+    { file: "pool-poppies-vertical.jpg", name: "Red poppies among wheat in soft light",     keys: ["flower", "field", "joy", "beauty"] }
+  ];
+  function pickScene(ref, text, excludeFile) {
+    var hay = (ref + " " + text).toLowerCase();
+    var pool = [];
+    SCENES.forEach(function (s) {
+      if (s.file === excludeFile) return;
+      for (var i = 0; i < s.keys.length; i++) {
+        if (hay.indexOf(s.keys[i]) !== -1) { pool.push(s); break; }
+      }
+    });
+    if (pool.length) return pool[Math.floor(Math.random() * pool.length)];
+    var rest = SCENES.filter(function (s) { return s.file !== excludeFile; });
+    var h = 0;
+    for (var j = 0; j < ref.length; j++) h = (h * 31 + ref.charCodeAt(j)) % 997;
+    return rest[h % rest.length];
+  }
+  /* ================= audible Bible (Web Speech API) ================= */
+  var speechSupported = ("speechSynthesis" in window);
+  var speakState = { active: false, paused: false, slug: null, chapter: 0, verse: 1, verses: [], bookName: "" };
+  function clearSpeaking() {
+    document.querySelectorAll(".verse.speaking").forEach(function (el) { el.classList.remove("speaking"); });
+  }
+  function stopSpeech() {
+    if (!speechSupported) return;
+    try { speechSynthesis.cancel(); } catch (e) {}
+    speakState.active = false;
+    speakState.paused = false;
+    clearSpeaking();
+    var play = $("audio-play");
+    if (play) { play.innerHTML = "&#9654; Listen"; play.disabled = false; }
+    var stop = $("audio-stop");
+    if (stop) stop.disabled = true;
+  }
+  function speakVerseAt(idx) {
+    if (!speakState.active) return;
+    if (idx >= speakState.verses.length) {
+      speakState.active = false;
+      clearSpeaking();
+      $("audio-status").textContent = speakState.bookName + " " + speakState.chapter + " — finished";
+      $("audio-play").innerHTML = "&#9654; Listen";
+      $("audio-stop").disabled = true;
+      return;
+    }
+    speakState.verse = idx + 1;
+    var text = speakState.verses[idx];
+    clearSpeaking();
+    var row = document.querySelector('.verse[data-verse="' + speakState.verse + '"]');
+    if (row) { row.classList.add("speaking"); row.scrollIntoView({ block: "nearest" }); }
+    $("audio-status").textContent = "Reading " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + " of " + speakState.verses.length;
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = state.settings.audioRate || 1;
+    u.onend = function () { if (speakState.active && !speakState.paused) speakVerseAt(idx + 1); };
+    u.onerror = function () { if (speakState.active) speakVerseAt(idx + 1); };
+    speechSynthesis.speak(u);
+  }
+  function speakChapter(slug, chapter, fromVerse) {
+    if (!speechSupported) { toast("Reading aloud is not supported on this device."); return; }
+    stopSpeech();
+    var b = bookBySlug(slug);
+    if (!b) return;
+    loadBook(slug).then(function (book) {
+      var verses = book.chapters[chapter - 1] || [];
+      if (!verses.length) return;
+      speakState.active = true;
+      speakState.paused = false;
+      speakState.slug = slug;
+      speakState.chapter = chapter;
+      speakState.verses = verses;
+      speakState.bookName = book.name;
+      $("audio-play").innerHTML = "&#10074;&#10074; Pause";
+      $("audio-stop").disabled = false;
+      setTimeout(function () { speakVerseAt((fromVerse || 1) - 1); }, 120);
+    });
+  }
+  function speakSingle(ref, text) {
+    if (!speechSupported) { toast("Reading aloud is not supported on this device."); return; }
+    stopSpeech();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = state.settings.audioRate || 1;
+    speechSynthesis.speak(u);
+    toast("Reading aloud with your device\u2019s own voice");
+  }
+  $("audio-play").addEventListener("click", function () {
+    if (!speechSupported) { toast("Reading aloud is not supported on this device."); return; }
+    if (speakState.active && !speakState.paused) {
+      speechSynthesis.pause();
+      speakState.paused = true;
+      $("audio-play").innerHTML = "&#9654; Resume";
+      $("audio-status").textContent = "Paused — " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse;
+    } else if (speakState.active && speakState.paused) {
+      speechSynthesis.resume();
+      speakState.paused = false;
+      $("audio-play").innerHTML = "&#10074;&#10074; Pause";
+      $("audio-status").textContent = "Reading " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + " of " + speakState.verses.length;
+    } else if (currentBook) {
+      speakChapter(currentBook.slug, currentChapter, 1);
+    }
+  });
+  $("audio-stop").addEventListener("click", function () {
+    stopSpeech();
+    if (currentBook) $("audio-status").textContent = currentBook.name + " " + currentChapter + " — stopped";
+  });
+  $("audio-rate").addEventListener("change", function () {
+    state.settings.audioRate = parseFloat($("audio-rate").value) || 1;
+    saveState();
+  });
+  if (!speechSupported) {
+    $("audio-play").disabled = true;
+    $("audio-note").textContent = "Reading aloud is not available on this device or browser.";
+  } else {
+    $("audio-rate").value = String(state.settings.audioRate || 1);
+  }
+
+  /* ================= calendar + favorites ================= */
+  var calCursor = { y: new Date().getFullYear(), m: new Date().getMonth() };
+  var calSelected = null; // dateKey
+  function favButtons(entry, key, onChange) {
+    var wrap = document.createElement("div");
+    wrap.className = "btn-row";
+    var mk = function (label, fn, cls) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "icon-btn" + (cls ? " " + cls : "");
+      b.textContent = label;
+      b.addEventListener("click", function (e) { e.stopPropagation(); fn(); });
+      wrap.appendChild(b);
+      return b;
+    };
+    mk("Open in Read", function () { openChapter(entry.book, entry.chapter, entry.verse); showTab("read"); });
+    mk("\u25B6 Listen", function () { speakSingle(entry.ref, entry.text); });
+    mk("Share card", function () { openShareCard(entry.ref, entry.text); });
+    mk("Remove", function () {
+      toggleFavorite(entry);
+      if (onChange) onChange();
+    });
+    return wrap;
+  }
+  function favItemEl(entry, key, onChange) {
+    var div = document.createElement("div");
+    div.className = "fav-item";
+    var t = document.createElement("div");
+    t.className = "ft";
+    t.textContent = "\u201C" + entry.text + "\u201D";
+    var r = document.createElement("div");
+    r.className = "verse-ref";
+    r.textContent = entry.ref + "  (WEB)" + (key ? "  \u00B7  " + fmtLong(key) : "");
+    div.appendChild(t);
+    div.appendChild(r);
+    div.appendChild(favButtons(entry, key, onChange));
+    return div;
+  }
+  function renderCalendar() {
+    var y = calCursor.y, m = calCursor.m;
+    $("cal-title").textContent = new Date(y, m, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    var grid = $("cal-grid");
+    grid.innerHTML = "";
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(function (d) {
+      var h = document.createElement("div");
+      h.className = "cal-dow";
+      h.textContent = d;
+      grid.appendChild(h);
+    });
+    var first = new Date(y, m, 1).getDay();
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+    var todayKey = dateKey(new Date());
+    for (var i = 0; i < first; i++) {
+      var blank = document.createElement("div");
+      blank.className = "cal-day other";
+      blank.setAttribute("aria-hidden", "true");
+      grid.appendChild(blank);
+    }
+    for (var d = 1; d <= daysInMonth; d++) {
+      (function (day) {
+        var key = y + "-" + String(m + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+        var list = state.favorites[key] || [];
+        var cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "cal-day" + (list.length ? " saved" : "") + (key === todayKey ? " today" : "") + (key === calSelected ? " sel" : "");
+        var num = document.createElement("span");
+        num.className = "d";
+        num.textContent = day;
+        cell.appendChild(num);
+        if (list.length) {
+          var lab = document.createElement("span");
+          lab.className = "s";
+          lab.textContent = list.length > 1 ? "SAVED \u00B7 " + list.length : "SAVED";
+          cell.appendChild(lab);
+        }
+        cell.addEventListener("click", function () { showDay(key); });
+        grid.appendChild(cell);
+      })(d);
+    }
+    if (calSelected) showDay(calSelected, true);
+    renderAllFavs();
+  }
+  function showDay(key, keepGrid) {
+    calSelected = key;
+    var list = state.favorites[key] || [];
+    var card = $("day-card");
+    card.hidden = false;
+    $("day-title").textContent = fmtLong(key) + (list.length ? " — " + list.length + " saved verse" + (list.length === 1 ? "" : "s") : "");
+    var box = $("day-favs");
+    box.innerHTML = "";
+    if (!list.length) {
+      box.innerHTML = '<p class="dim">No verses saved on this day yet. Tap the heart on any verse to save it here.</p>';
+    } else {
+      list.forEach(function (entry) {
+        box.appendChild(favItemEl(entry, null, function () {
+          renderCalendar();
+          if (!(state.favorites[key] || []).length) { calSelected = null; card.hidden = true; }
+          else showDay(key, true);
+        }));
+      });
+    }
+    if (!keepGrid) renderCalendar();
+    card.scrollIntoView({ block: "nearest" });
+  }
+  function renderAllFavs() {
+    var keys = Object.keys(state.favorites).sort();
+    var total = totalFavorites();
+    $("fav-count").textContent = total ? (total + " favorite verse" + (total === 1 ? "" : "s") + " saved.") : "No favorites saved yet — tap the heart on any verse.";
+    var box = $("all-favs");
+    box.innerHTML = "";
+    keys.forEach(function (key) {
+      state.favorites[key].forEach(function (entry) {
+        box.appendChild(favItemEl(entry, key, function () { renderCalendar(); }));
+      });
+    });
+  }
+  $("cal-prev").addEventListener("click", function () {
+    calCursor.m--;
+    if (calCursor.m < 0) { calCursor.m = 11; calCursor.y--; }
+    calSelected = null; $("day-card").hidden = true;
+    renderCalendar();
+  });
+  $("cal-next").addEventListener("click", function () {
+    calCursor.m++;
+    if (calCursor.m > 11) { calCursor.m = 0; calCursor.y++; }
+    calSelected = null; $("day-card").hidden = true;
+    renderCalendar();
+  });
+  $("cal-today").addEventListener("click", function () {
+    var n = new Date();
+    calCursor = { y: n.getFullYear(), m: n.getMonth() };
+    calSelected = null; $("day-card").hidden = true;
+    renderCalendar();
+  });
+  /* ================= notes ================= */
+  function renderNotes() {
+    var box = $("notes-list");
+    box.innerHTML = "";
+    if (!state.notes.length) {
+      box.innerHTML = '<p class="dim">No notes yet. Write your first note above, or tap &ldquo;Add note&rdquo; on any verse.</p>';
+      return;
+    }
+    state.notes.slice().reverse().forEach(function (n) {
+      var div = document.createElement("div");
+      div.className = "note-item";
+      if (n.ref) {
+        var chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "ref-chip";
+        chip.textContent = n.ref + "  (WEB)";
+        chip.addEventListener("click", function () {
+          var m = n.ref.match(/^(.*) (\d+):(\d+)$/);
+          if (m) openChapter(m[1].toLowerCase().replace(/[^a-z0-9]+/g, ""), +m[2], +m[3]);
+          showTab("read");
+        });
+        div.appendChild(chip);
+      }
+      var t = document.createElement("div");
+      t.className = "nt";
+      t.textContent = n.text;
+      div.appendChild(t);
+      var meta = document.createElement("div");
+      meta.className = "nd";
+      meta.textContent = fmtLong(n.date);
+      div.appendChild(meta);
+      var row = document.createElement("div");
+      row.className = "btn-row";
+      if (n.ref) {
+        var edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "icon-btn";
+        edit.textContent = "Edit";
+        edit.addEventListener("click", function () { openNoteEditor(n.ref, n.text); });
+        row.appendChild(edit);
+      }
+      var del = document.createElement("button");
+      del.type = "button";
+      del.className = "icon-btn";
+      del.textContent = "Delete";
+      del.addEventListener("click", function () {
+        state.notes = state.notes.filter(function (x) { return x.id !== n.id; });
+        saveState();
+        renderNotes();
+        toast("Note deleted");
+      });
+      row.appendChild(del);
+      div.appendChild(row);
+      box.appendChild(div);
+    });
+  }
+  $("note-save").addEventListener("click", function () {
+    var text = $("note-text").value.trim();
+    if (!text) { toast("Write something first"); return; }
+    state.notes.push({ id: Date.now(), date: dateKey(new Date()), ref: null, text: text });
+    saveState();
+    $("note-text").value = "";
+    renderNotes();
+    toast("Note saved on this device");
+  });
+  $("note-export").addEventListener("click", function () {
+    var data = {
+      app: "Daily Word 360 Bible",
+      exportedAt: new Date().toISOString(),
+      favorites: state.favorites,
+      notes: state.notes,
+      lastRead: state.lastRead
+    };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "daily-word-360-bible-backup.json";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    toast("Backup downloaded");
+  });
+  function openNoteEditor(ref, existingText) {
+    var root = $("modal-root");
+    root.innerHTML = "";
+    var overlay = document.createElement("div");
+    overlay.className = "modal";
+    var card = document.createElement("div");
+    card.className = "modal-card";
+    card.innerHTML = "<h3>Note on " + esc(ref) + " (WEB)</h3>" +
+      '<p class="dim">Saved on this device only.</p>';
+    var ta = document.createElement("textarea");
+    ta.value = existingText || (function () {
+      for (var i = state.notes.length - 1; i >= 0; i--) if (state.notes[i].ref === ref) return state.notes[i].text;
+      return "";
+    })();
+    ta.placeholder = "What is God saying to you in this verse?";
+    card.appendChild(ta);
+    var row = document.createElement("div");
+    row.className = "timer-row";
+    var save = document.createElement("button");
+    save.type = "button";
+    save.className = "cta-btn";
+    save.textContent = "Save note";
+    save.addEventListener("click", function () {
+      var text = ta.value.trim();
+      if (!text) { toast("Write something first"); return; }
+      var updated = false;
+      for (var i = state.notes.length - 1; i >= 0; i--) {
+        if (state.notes[i].ref === ref) { state.notes[i].text = text; state.notes[i].date = dateKey(new Date()); updated = true; break; }
+      }
+      if (!updated) state.notes.push({ id: Date.now(), date: dateKey(new Date()), ref: ref, text: text });
+      saveState();
+      root.innerHTML = "";
+      toast("Note saved on this device");
+    });
+    var cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "cta-btn ghost";
+    cancel.textContent = "Close";
+    cancel.addEventListener("click", function () { root.innerHTML = ""; });
+    row.appendChild(save);
+    row.appendChild(cancel);
+    card.appendChild(row);
+    overlay.appendChild(card);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) root.innerHTML = ""; });
+    root.appendChild(overlay);
+    ta.focus();
+  }
+  /* ================= music player (journal app pattern) ================= */
+  var musicAudio = $("music-audio");
+  var musicIdx = state.settings.musicTrack || 0;
+  var musicPlaying = false;
+  function positionBar() {
+    var tabs = document.querySelector("nav.tabs");
+    var bar = $("music-bar");
+    if (!bar.hidden && tabs) bar.style.bottom = tabs.offsetHeight + "px";
+  }
+  function updateMusicUI() {
+    $("music-name").textContent = MUSIC_TRACKS[musicIdx].title;
+    $("music-play").innerHTML = musicPlaying ? "&#10074;&#10074;" : "&#9654;";
+    document.querySelectorAll(".track-row").forEach(function (el, i) {
+      el.classList.toggle("playing", i === musicIdx && musicPlaying);
+    });
+  }
+  function loadTrack(i, autoplay) {
+    musicIdx = ((i % MUSIC_TRACKS.length) + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
+    state.settings.musicTrack = musicIdx;
+    saveState();
+    musicAudio.src = MUSIC_TRACKS[musicIdx].file;
+    $("music-bar").hidden = false;
+    positionBar();
+    updateMusicUI();
+    if (autoplay) {
+      musicAudio.play().then(function () { musicPlaying = true; updateMusicUI(); }).catch(function () { musicPlaying = false; updateMusicUI(); });
+    }
+  }
+  function toggleMusic() {
+    if (musicPlaying) {
+      musicAudio.pause();
+      musicPlaying = false;
+      updateMusicUI();
+    } else {
+      if (!musicAudio.src) { loadTrack(musicIdx, true); return; }
+      musicAudio.play().then(function () { musicPlaying = true; updateMusicUI(); }).catch(function () { toast("Music could not start here — tap a track to try again."); });
+    }
+  }
+  musicAudio.addEventListener("ended", function () { loadTrack(musicIdx + 1, true); });
+  musicAudio.addEventListener("pause", function () { if (!musicAudio.ended) { musicPlaying = false; updateMusicUI(); } });
+  $("music-play").addEventListener("click", toggleMusic);
+  $("music-next").addEventListener("click", function () { loadTrack(musicIdx + 1, true); });
+  $("music-prev").addEventListener("click", function () { loadTrack(musicIdx - 1, true); });
+  $("music-name").addEventListener("click", function () { showTab("music"); });
+  $("music-vol").addEventListener("input", function () {
+    var v = parseInt($("music-vol").value, 10) || 0;
+    musicAudio.volume = v / 100;
+    state.settings.musicVolume = v;
+    saveState();
+  });
+  function renderTrackList() {
+    var box = $("track-list");
+    box.innerHTML = "";
+    MUSIC_TRACKS.forEach(function (t, i) {
+      var row = document.createElement("button");
+      row.type = "button";
+      row.className = "track-row" + (i === musicIdx && musicPlaying ? " playing" : "");
+      row.innerHTML = '<span class="n">' + (i + 1) + '.</span><span>' + esc(t.title) + '</span>';
+      row.addEventListener("click", function () { loadTrack(i, true); });
+      box.appendChild(row);
+    });
+  }
+  musicAudio.volume = (state.settings.musicVolume || 40) / 100;
+  $("music-vol").value = String(state.settings.musicVolume || 40);
+  $("music-name").textContent = MUSIC_TRACKS[musicIdx].title;
+  window.addEventListener("resize", positionBar);
+
+  /* ================= shareable verse cards (1080x1350, nature scenes) ================= */
+  var shareCanvas = null, shareScene = null, shareRef = "", shareText = "";
+  function wrapLines(ctx, text, maxW) {
+    var words = String(text).split(/\s+/);
+    var lines = [], line = "";
+    words.forEach(function (w) {
+      var test = line ? line + " " + w : w;
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; }
+      else line = test;
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+  function drawSceneCard(ref, text, scene) {
+    return new Promise(function (resolve) {
+      var cv = document.createElement("canvas");
+      cv.width = 1080; cv.height = 1350;
+      var ctx = cv.getContext("2d");
+      var img = new Image();
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        /* soft dark band behind the text so white verse stays readable */
+        var band = ctx.createLinearGradient(0, 240, 0, 1080);
+        band.addColorStop(0, "rgba(0,0,0,0)");
+        band.addColorStop(0.22, "rgba(0,0,0,0.42)");
+        band.addColorStop(0.5, "rgba(0,0,0,0.55)");
+        band.addColorStop(0.78, "rgba(0,0,0,0.42)");
+        band.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = band;
+        ctx.fillRect(0, 240, 1080, 840);
+        /* branding */
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#e8c97e";
+        ctx.font = "700 30px Georgia, 'Times New Roman', serif";
+        ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
+        ctx.fillText("D A I L Y   W O R D   3 6 0", 540, 108);
+        ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        /* verse, white serif with a deep dark shadow (devotional style) */
+        var size = 62, lines = [];
+        while (size >= 30) {
+          ctx.font = size + "px Georgia, 'Times New Roman', serif";
+          lines = wrapLines(ctx, text, 880);
+          if (lines.length * size * 1.38 <= 660 || size === 30) break;
+          size -= 4;
+        }
+        var lh = size * 1.38;
+        var blockH = lines.length * lh;
+        var startY = 660 - blockH / 2 + size * 0.5;
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(0,0,0,0.9)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6;
+        ctx.font = size + "px Georgia, 'Times New Roman', serif";
+        lines.forEach(function (ln, i) { ctx.fillText(ln, 540, startY + i * lh); });
+        ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        /* thin gold rule + reference */
+        var ruleY = 660 + blockH / 2 + 52;
+        ctx.fillStyle = "#c9a45c";
+        ctx.fillRect(480, ruleY, 120, 4);
+        ctx.fillStyle = "#e8c97e";
+        ctx.font = "700 40px Georgia, 'Times New Roman', serif";
+        ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
+        ctx.fillText(ref.toUpperCase() + "  (WEB)", 540, ruleY + 72);
+        ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
+        ctx.font = "26px Georgia, 'Times New Roman', serif";
+        ctx.fillText("WORLD ENGLISH BIBLE", 540, 1290);
+        resolve(cv);
+      }
+      img.onload = function () {
+        /* cover-crop the scene to 1080x1350 */
+        var iw = img.naturalWidth, ih = img.naturalHeight;
+        var scale = Math.max(1080 / iw, 1350 / ih);
+        var dw = iw * scale, dh = ih * scale;
+        ctx.drawImage(img, (1080 - dw) / 2, (1350 - dh) / 2, dw, dh);
+        finish();
+      };
+      img.onerror = function () {
+        var g = ctx.createLinearGradient(0, 0, 0, 1350);
+        g.addColorStop(0, "#14503a"); g.addColorStop(0.55, "#0e2417"); g.addColorStop(1, "#0a1c11");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, 1080, 1350);
+        finish();
+      };
+      img.src = "scenes/" + scene.file;
+    });
+  }
+  function openShareCard(ref, text) {
+    shareRef = ref; shareText = text;
+    shareScene = pickScene(ref, text, null);
+    var root = $("modal-root");
+    root.innerHTML = "";
+    var overlay = document.createElement("div");
+    overlay.className = "modal";
+    var card = document.createElement("div");
+    card.className = "modal-card";
+    card.innerHTML = "<h3>Share this verse</h3>";
+    var img = document.createElement("img");
+    img.alt = "Verse card: " + ref;
+    card.appendChild(img);
+    var sceneNote = document.createElement("p");
+    sceneNote.className = "dim";
+    card.appendChild(sceneNote);
+    var row = document.createElement("div");
+    row.className = "timer-row";
+    function mkBtn(label, cls, fn) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = cls;
+      b.textContent = label;
+      b.addEventListener("click", fn);
+      row.appendChild(b);
+      return b;
+    }
+    function render() {
+      sceneNote.textContent = "Scene: " + shareScene.name + (shareScene.isNew ? "  \u2726 NEW" : "");
+      drawSceneCard(shareRef, shareText, shareScene).then(function (cv) {
+        shareCanvas = cv;
+        img.src = cv.toDataURL("image/png");
+      });
+    }
+    mkBtn("Share", "cta-btn", function () {
+      if (!shareCanvas) return;
+      shareCanvas.toBlob(function (blob) {
+        var file = new File([blob], "daily-word-360-verse.png", { type: "image/png" });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: "Daily Word 360 — " + shareRef }).catch(function () {});
+        } else {
+          downloadCard();
+          toast("Sharing is not available here — the image was downloaded instead");
+        }
+      }, "image/png");
+    });
+    mkBtn("Download image", "cta-btn ghost", downloadCard);
+    mkBtn("Try another scene", "cta-btn ghost", function () {
+      shareScene = pickScene(shareRef, shareText, shareScene.file);
+      render();
+    });
+    mkBtn("Close", "link-btn", function () { root.innerHTML = ""; });
+    card.appendChild(row);
+    overlay.appendChild(card);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) root.innerHTML = ""; });
+    root.appendChild(overlay);
+    render();
+  }
+  function downloadCard() {
+    if (!shareCanvas) return;
+    var a = document.createElement("a");
+    a.href = shareCanvas.toDataURL("image/png");
+    a.download = "daily-word-360-verse.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    toast("Verse card downloaded");
+  }
+  /* ================= init ================= */
+  loadState();
+  fetchJSON("books.json").then(function (idx) {
+    BOOKS = Array.isArray(idx) ? idx : (idx.books || []);
+    renderBookPicker();
+    renderContinue();
+    startSearchPrefetch();
+  }).catch(function () {
+    $("search-status").textContent = "The Bible index could not be loaded. Please check your connection and reload.";
+  });
+  fetchJSON("daily-verses.json").then(function (d) {
+    DAILY = Array.isArray(d) ? d : (d.verses || []);
+    renderDaily();
+  }).catch(function () {
+    $("daily-text").textContent = "Today\u2019s verse could not be loaded — please reload.";
+  });
+  positionBar();
+})();
+</script>
+</body>
+</html>
