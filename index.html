@@ -25,9 +25,22 @@
     --gold: #c9a45c;
     --gold-deep: #a07d2c;
     --radius: 10px;
+    /* Black silk: two-tone near-black folded together in soft diagonal
+       bands, with a slow sheen drifting across — the journal app's silk,
+       in black instead of green. All tones are near-black so the page
+       stays predominantly black and the white containers stay readable. */
     --silk-bg:
-      linear-gradient(115deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0) 22%, rgba(0,0,0,0.45) 50%, rgba(255,255,255,0.035) 78%, rgba(255,255,255,0) 100%),
-      linear-gradient(135deg, #1a1a1a 0%, #000000 55%, #0b0b0b 100%);
+      radial-gradient(130% 80% at 12% -10%, rgba(255, 255, 255, 0.05), transparent 55%),
+      radial-gradient(120% 90% at 105% 110%, rgba(0, 0, 0, 0.5), transparent 62%),
+      repeating-linear-gradient(
+        118deg,
+        rgba(255, 255, 255, 0.035) 0,
+        rgba(255, 255, 255, 0.035) 70px,
+        rgba(0, 0, 0, 0.14) 130px,
+        rgba(255, 255, 255, 0.018) 200px,
+        rgba(0, 0, 0, 0.09) 280px
+      ),
+      linear-gradient(165deg, #141414 0%, #000000 48%, #0a0a0a 100%);
   }
   html, body { margin: 0; padding: 0; }
   body {
@@ -35,8 +48,13 @@
     background-color: #000000;
     background-image: var(--silk-bg);
     background-attachment: fixed;
+    animation: silk-drift 26s ease-in-out infinite alternate;
     color: var(--text);
     -webkit-text-size-adjust: 100%;
+  }
+  @keyframes silk-drift {
+    from { background-position: 0 0, 0 0, 0 0, 0 0; }
+    to { background-position: 0 0, 0 0, 280px 0, 0 0; }
   }
   /* First-version compact header: small logo + title side by side. */
   header.app {
@@ -51,7 +69,7 @@
   .logo-shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 32%, rgba(255,236,180,0.32) 45%, rgba(255,250,225,0.7) 50%, rgba(255,236,180,0.32) 55%, transparent 68%); transform: translateX(-130%); mix-blend-mode: screen; animation: logo-light-pass 6s ease-in-out infinite; pointer-events: none; }
   @keyframes logo-light-pass { 0% { transform: translateX(-130%); } 30%, 100% { transform: translateX(130%); } }
   @keyframes logo-gold-glow { 0%, 100% { filter: brightness(1); } 15% { filter: brightness(1.3) saturate(1.15); } }
-  @media (prefers-reduced-motion: reduce) { .logo-shine::after, .logo-shine img { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .logo-shine::after, .logo-shine img { animation: none; } body { animation: none; } }
   header.app h1 { font-size: 1.35rem; line-height: 1.15; margin: 0; font-weight: 700; }
   header.app p { margin: 0.15rem 0 0; font-size: 0.85rem; color: var(--header-dim); }
   .web-badge { display: inline-block; margin-top: 0.3rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #000000; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
