@@ -27,6 +27,23 @@
     font-style: italic;
     font-display: swap;
   }
+  /* DejaVu Serif — used ONLY for the shareable verse cards (Godwin:
+     cards should use the devotional font). Self-hosted TTFs in fonts/;
+     license note in fonts/DejaVu-LICENSE.txt. The app UI keeps Source Serif 4. */
+  @font-face {
+    font-family: 'DejaVu Serif';
+    src: url('fonts/DejaVuSerif.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'DejaVu Serif';
+    src: url('fonts/DejaVuSerif-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
   :root {
     /* Containers: transparent white over the black page (v1's cream cards,
        made translucent so the black shows through); dark text on them. */
@@ -1367,11 +1384,11 @@
       var ctx = cv.getContext("2d");
       var img = new Image();
       var done = false;
-      /* wait for Source Serif 4 so the card is drawn in it (falls back to
-         Georgia if the font fails to load) */
+      /* wait for DejaVu Serif so the card is drawn in it (the devotional
+         font; falls back to Georgia if the font fails to load) */
       var fontsReady = (document.fonts && document.fonts.load) ? Promise.all([
-        document.fonts.load('400 30px "Source Serif 4"'),
-        document.fonts.load('700 30px "Source Serif 4"')
+        document.fonts.load('400 30px "DejaVu Serif"'),
+        document.fonts.load('700 30px "DejaVu Serif"')
       ]).catch(function () {}) : Promise.resolve();
       function finish() {
         if (done) return;
@@ -1385,17 +1402,20 @@
         band.addColorStop(1, "rgba(0,0,0,0)");
         ctx.fillStyle = band;
         ctx.fillRect(0, 240, 1080, 840);
-        /* branding */
+        /* branding — WORD OF LIFE heading, white and larger, with the short
+           white divider line directly beneath it (no gold anywhere on the card) */
         ctx.textAlign = "center";
-        ctx.fillStyle = "#e8c97e";
-        ctx.font = "700 30px 'Source Serif 4', Georgia, 'Times New Roman', serif";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "700 48px 'DejaVu Serif', Georgia, 'Times New Roman', serif";
         ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
         ctx.fillText("W O R D   O F   L I F E", 540, 108);
         ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(480, 148, 120, 4);
         /* verse, white serif with a deep dark shadow (devotional style) */
         var size = 62, lines = [];
         while (size >= 30) {
-          ctx.font = size + "px 'Source Serif 4', Georgia, 'Times New Roman', serif";
+          ctx.font = size + "px 'DejaVu Serif', Georgia, 'Times New Roman', serif";
           lines = wrapLines(ctx, text, 880);
           if (lines.length * size * 1.38 <= 660 || size === 30) break;
           size -= 4;
@@ -1405,21 +1425,19 @@
         var startY = 660 - blockH / 2 + size * 0.5;
         ctx.fillStyle = "#ffffff";
         ctx.shadowColor = "rgba(0,0,0,0.9)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6;
-        ctx.font = size + "px 'Source Serif 4', Georgia, 'Times New Roman', serif";
+        ctx.font = size + "px 'DejaVu Serif', Georgia, 'Times New Roman', serif";
         lines.forEach(function (ln, i) { ctx.fillText(ln, 540, startY + i * lh); });
         ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-        /* thin gold rule + reference */
-        var ruleY = 660 + blockH / 2 + 52;
-        ctx.fillStyle = "#c9a45c";
-        ctx.fillRect(480, ruleY, 120, 4);
-        ctx.fillStyle = "#e8c97e";
-        ctx.font = "700 40px 'Source Serif 4', Georgia, 'Times New Roman', serif";
+        /* reference below the verse, in white like everything else on the card */
+        var refY = 660 + blockH / 2 + 52 + 72;
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "700 40px 'DejaVu Serif', Georgia, 'Times New Roman', serif";
         ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
-        ctx.fillText(ref.toUpperCase() + "  (WEB)", 540, ruleY + 72);
+        ctx.fillText(ref.toUpperCase() + "  (WEB)", 540, refY);
         ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
         ctx.fillStyle = "rgba(255,255,255,0.85)";
-        ctx.font = "26px 'Source Serif 4', Georgia, 'Times New Roman', serif";
-        ctx.fillText("WORLD ENGLISH BIBLE", 540, 1290);
+        ctx.font = "26px 'DejaVu Serif', Georgia, 'Times New Roman', serif";
+        ctx.fillText("POWERED BY DAILY WORD 360", 540, 1290);
         resolve(cv);
       }
       img.onload = function () {
