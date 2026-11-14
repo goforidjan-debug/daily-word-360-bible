@@ -144,12 +144,16 @@ function check(name, ok, detail) {
   // 11. Audio chapter listen button (speech path, must not throw)
   await page.click('[data-tab="read"]');
   await page.waitForTimeout(400);
+  const beforeTitle = await page.textContent('#chapter-title');
   await page.click('#audio-play');
   await page.waitForTimeout(800);
   const audioStatus = await page.textContent('#audio-status');
-  // In headless Chromium there is no voice, so utterances end instantly and the
-  // chapter can already read "finished" — either state proves the speech path ran.
-  check('chapter listen starts without error', audioStatus.includes('Reading') || audioStatus.includes('finished') || audioStatus.includes('Paused'), audioStatus);
+  const afterTitle = await page.textContent('#chapter-title');
+  // In headless Chromium there is no voice, so utterances end instantly and
+  // the chapter auto-advances through Genesis; the status cycles between
+  // "Reading ..." and the next chapter's "N verses" line. Either state —
+  // or a changed chapter title — proves the speech path ran.
+  check('chapter listen starts without error', audioStatus.includes('Reading') || audioStatus.includes('finished') || audioStatus.includes('Paused') || afterTitle !== beforeTitle, audioStatus + ' / ' + afterTitle);
   if (await page.locator('#audio-stop').isEnabled()) await page.click('#audio-stop');
 
   // 13. Auto-advance moves exactly one chapter (Revelation 1 -> 2, never further)
@@ -216,7 +220,31 @@ function check(name, ok, detail) {
   const recCount3 = await page.evaluate(() => window.__rec.length);
   check('stale intro signals after stop are ignored', stopTitle2.includes('Revelation 2') && recCount3 === 22, stopTitle2 + ' / ' + recCount3 + ' utterances');
 
-  // 15. No page errors at all
+  // 16. Voice select stays inside the audio bar, even with a long voice name
+  await page.click('[data-tab="read"]');
+  await page.waitForTimeout(300);
+  await page.evaluate(() => {
+    const sel = document.querySelector('#audio-voice');
+    const o = document.createElement('option');
+    o.textContent = 'A very long voice name that would overflow the bar (en-US)';
+    sel.appendChild(o);
+    sel.selectedIndex = sel.options.length - 1;
+  });
+  await page.waitForTimeout(200);
+  const barBox = await page.locator('#audio-bar').boundingBox();
+  const voiceBox = await page.locator('#audio-voice').boundingBox();
+  check('voice select with a long name fits inside the audio bar', barBox && voiceBox && voiceBox.x >= barBox.x - 1 && voiceBox.x + voiceBox.width <= barBox.x + barBox.width + 1, 'voice ' + Math.round(voiceBox.width) + 'px in bar ' + Math.round(barBox.width) + 'px');
+
+  // 17. Tapping the voice select shows the app's gold focus ring, not the phone's heavy black one
+  await page.focus('#audio-voice');
+  await page.waitForTimeout(200);
+  const outline = await page.evaluate(() => {
+    const cs = getComputedStyle(document.querySelector('#audio-voice'));
+    return cs.outlineWidth + ' ' + cs.outlineStyle + ' ' + cs.outlineColor;
+  });
+  check('voice select focus ring is the gold 2px outline', outline.startsWith('2px solid'), outline);
+
+  // 18. No page errors at all
   check('no page errors / console errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 
   console.log('\n' + results.filter(r => r.ok).length + '/' + results.length + ' checks passed');
