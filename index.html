@@ -153,7 +153,11 @@
   .verse-actions .icon-btn { font-size: 0.82rem; padding: 0.3rem 0.65rem; }
   .audio-bar { background: #e9efe7; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
   .audio-bar .status { flex: 1; min-width: 8rem; font-size: 0.85rem; color: var(--gold-deep); font-weight: 700; }
-  .audio-bar select { width: auto; padding: 0.3rem 0.4rem; font-size: 0.85rem; }
+  .audio-bar select { width: auto; max-width: 100%; min-width: 0; padding: 0.3rem 0.4rem; font-size: 0.85rem; }
+  .audio-bar #audio-voice { flex: 1 1 11rem; }
+  /* The phone draws a heavy black ring around a tapped dropdown, spilling
+     over the bar around it — use a neat gold ring instead. */
+  .audio-bar select:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
   .audio-bar .autoplay { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; color: var(--text); cursor: pointer; white-space: nowrap; }
   .audio-bar .autoplay input { accent-color: var(--gold-deep); width: 1rem; height: 1rem; margin: 0; }
   .search-results { margin-top: 0.6rem; }
@@ -304,7 +308,7 @@
         </select>
         <label class="autoplay" for="audio-autoplay"><input type="checkbox" id="audio-autoplay" checked /> Auto-play next chapter</label>
       </div>
-      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. Pick a voice above — the choices depend on your phone or computer. While listening, the app keeps your screen awake so the reading keeps going.</p>
+      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. Pick a voice above — the choices depend on your phone or computer. While listening, the app keeps your screen awake so the reading keeps going. The voice list shows every voice your phone has — if it only lists women&rsquo;s voices, more voices (including men&rsquo;s) can be added in your phone&rsquo;s text-to-speech settings.</p>
       <div id="chapter-verses"></div>
     </div>
   </section>
