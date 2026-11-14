@@ -304,7 +304,7 @@
         </select>
         <label class="autoplay" for="audio-autoplay"><input type="checkbox" id="audio-autoplay" checked /> Auto-play next chapter</label>
       </div>
-      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. Pick a voice above — the choices depend on your phone or computer.</p>
+      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. Pick a voice above — the choices depend on your phone or computer. While listening, the app keeps your screen awake so the reading keeps going.</p>
       <div id="chapter-verses"></div>
     </div>
   </section>
@@ -817,15 +817,36 @@
   }
   /* ================= audible Bible (Web Speech API) ================= */
   var speechSupported = ("speechSynthesis" in window);
-  var speakState = { active: false, paused: false, slug: null, chapter: 0, verse: 1, verses: [], bookName: "" };
+  var speakState = { active: false, paused: false, slug: null, chapter: 0, verse: 1, verses: [], bookName: "", gen: 0, introTimer: null };
+  var wakeLock = null;
+  /* Keep the screen awake while listening: phones stop the built-in
+     voice when the screen locks, so the app holds a screen wake lock
+     for the whole reading and releases it when listening stops. */
+  function requestWakeLock() {
+    if (!("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+    try {
+      var p = navigator.wakeLock.request("screen");
+      if (p && p.then) p.then(function (lock) { wakeLock = lock; }).catch(function () { wakeLock = null; });
+    } catch (e) { wakeLock = null; }
+  }
+  function releaseWakeLock() {
+    if (wakeLock) { try { wakeLock.release(); } catch (e) {} wakeLock = null; }
+  }
   function clearSpeaking() {
     document.querySelectorAll(".verse.speaking").forEach(function (el) { el.classList.remove("speaking"); });
   }
   function stopSpeech() {
     if (!speechSupported) return;
-    try { speechSynthesis.cancel(); } catch (e) {}
+    /* Mark this reading dead FIRST (and bump the generation), so any
+       end or error signal the stopped voice still sends afterwards —
+       the phone's voice system can send one when a reading is cut off —
+       is ignored instead of moving the reading on another chapter. */
     speakState.active = false;
     speakState.paused = false;
+    speakState.gen++;
+    if (speakState.introTimer) { clearTimeout(speakState.introTimer); speakState.introTimer = null; }
+    releaseWakeLock();
+    try { speechSynthesis.cancel(); } catch (e) {}
     clearSpeaking();
     var play = $("audio-play");
     if (play) { play.innerHTML = "&#9654; Listen"; play.disabled = false; }
@@ -886,8 +907,20 @@
     u.lang = "en-US";
     u.rate = state.settings.audioRate || 1;
     applyVoice(u);
-    u.onend = function () { if (speakState.active && !speakState.paused) speakVerseAt(idx + 1); };
-    u.onerror = function () { if (speakState.active) speakVerseAt(idx + 1); };
+    var gen = speakState.gen;
+    /* Only this reading's own end signal moves the reading on. A late
+       signal from a verse that was already stopped (e.g. when a
+       chapter ends and the next one starts) is ignored — that is what
+       used to skip whole chapters at once. */
+    u.onend = function () { if (gen === speakState.gen && speakState.active && !speakState.paused) speakVerseAt(idx + 1); };
+    u.onerror = function (ev) {
+      if (gen !== speakState.gen || !speakState.active) return;
+      /* A cut-off voice ("canceled" / "interrupted" — screen locked,
+         reading stopped) is not a finished verse: do not move on. */
+      var err = (ev && ev.error) || "";
+      if (err === "canceled" || err === "interrupted") return;
+      speakVerseAt(idx + 1);
+    };
     speechSynthesis.speak(u);
   }
   /* Chapter announcement, like an audiobook: the first chapter of a
@@ -919,18 +952,26 @@
       /* Announce the chapter first, as its own utterance (no verse
          highlight on it), then read the verses. Same voice and speed
          as the verses. */
-      setTimeout(function () {
+      speakState.introTimer = setTimeout(function () {
+        speakState.introTimer = null;
         if (!speakState.active) return;
+        var gen = speakState.gen;
         var introText = chapterIntroText(slug, chapter);
         if (!speakState.paused) $("audio-status").textContent = introText;
         var intro = new SpeechSynthesisUtterance(introText);
         intro.lang = "en-US";
         intro.rate = state.settings.audioRate || 1;
         applyVoice(intro);
-        intro.onend = function () { if (speakState.active && !speakState.paused) speakVerseAt((fromVerse || 1) - 1); };
-        intro.onerror = function () { if (speakState.active) speakVerseAt((fromVerse || 1) - 1); };
+        intro.onend = function () { if (gen === speakState.gen && speakState.active && !speakState.paused) speakVerseAt((fromVerse || 1) - 1); };
+        intro.onerror = function (ev) {
+          if (gen !== speakState.gen || !speakState.active) return;
+          var err = (ev && ev.error) || "";
+          if (err === "canceled" || err === "interrupted") return;
+          speakVerseAt((fromVerse || 1) - 1);
+        };
         speechSynthesis.speak(intro);
       }, 120);
+      requestWakeLock();
     });
   }
   function speakSingle(ref, text) {
@@ -940,6 +981,9 @@
     u.lang = "en-US";
     u.rate = state.settings.audioRate || 1;
     applyVoice(u);
+    u.onend = function () { releaseWakeLock(); };
+    u.onerror = function () { releaseWakeLock(); };
+    requestWakeLock();
     speechSynthesis.speak(u);
     toast("Reading aloud with your device\u2019s own voice");
   }
@@ -948,11 +992,13 @@
     if (speakState.active && !speakState.paused) {
       speechSynthesis.pause();
       speakState.paused = true;
+      releaseWakeLock();
       $("audio-play").innerHTML = "&#9654; Resume";
       $("audio-status").textContent = "Paused — " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse;
     } else if (speakState.active && speakState.paused) {
       speechSynthesis.resume();
       speakState.paused = false;
+      requestWakeLock();
       $("audio-play").innerHTML = "&#10074;&#10074; Pause";
       $("audio-status").textContent = "Reading " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + " of " + speakState.verses.length;
     } else if (currentBook) {
@@ -970,6 +1016,18 @@
   $("audio-autoplay").addEventListener("change", function () {
     state.settings.autoAdvance = $("audio-autoplay").checked;
     saveState();
+  });
+  /* If the screen locked or the app was hidden mid-reading, the phone
+     stops the voice. When the app is visible again, pick up at the
+     same verse instead of skipping ahead or starting over. */
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "visible") return;
+    if (!speakState.active || speakState.paused) return;
+    requestWakeLock();
+    try {
+      if (speechSynthesis.paused) { speechSynthesis.resume(); return; }
+      if (!speechSynthesis.speaking && !speechSynthesis.pending) speakVerseAt(speakState.verse - 1);
+    } catch (e) {}
   });
   if (!speechSupported) {
     $("audio-play").disabled = true;
