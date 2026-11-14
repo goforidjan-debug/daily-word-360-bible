@@ -1,0 +1,19 @@
+DejaVu Serif — license note
+============================
+
+DejaVuSerif.ttf and DejaVuSerif-Bold.ttf in this folder are the DejaVu
+Serif fonts (https://dejavu-fonts.github.io/), used ONLY for the shareable
+verse cards in the Word of Life Bible App. The rest of the app uses
+Source Serif 4 (see OFL.txt).
+
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved.
+Bitstream Vera is a trademark of Bitstream, Inc.
+DejaVu changes are in the public domain.
+
+Licensed under the Bitstream Vera license: permission is granted, free of
+charge, to reproduce and distribute the Font Software, including the rights
+to use, copy, merge, publish, distribute and/or sell copies, provided the
+above copyright and trademark notices and this permission notice are
+included in all copies. The fonts may be sold only as part of a larger
+software package, never by themselves. Full license text:
+https://dejavu-fonts.github.io/ (see also /usr/share/doc/fonts-dejavu-core/copyright on Debian).
