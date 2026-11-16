@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Word of Life v2 — Steadfast-style UI redesign (2026-11-15). Data, verses, scenes, music and TTS unchanged from v1. -->
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Word of Life — Powered by Daily Word 360</title>
 <meta name="description" content="Read the whole Bible in the World English Bible (WEB) translation, listen aloud, save favorite verses, write notes, and share verse cards — Word of Life, powered by Daily Word 360." />
-<meta name="theme-color" content="#000000" />
+<meta name="theme-color" content="#0e1216" />
 <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
@@ -45,283 +46,345 @@
     font-display: swap;
   }
   :root {
-    /* Containers: transparent white over the black page (v1's cream cards,
-       made translucent so the black shows through); dark text on them. */
-    --surface: rgba(255,255,255,0.88);
-    --surface-alt: #f6f2e7;
-    --header-surface: rgba(255,255,255,0.92);
-    --text: #26332c;
-    --header-text: #f3eedd;
-    --dim: #5c6b61;
-    --header-dim: #c3cdb9;
-    --border: #e4dcc4;
-    --accent: #d9a94f;
+    --bg: #0e1216;
+    --panel: #1f262d;
+    --panel2: #171c21;
+    --steel: #5b7a94;
+    --steel-deep: #3d5a74;
+    --tan: #c98d4b;
+    --tan-light: #dda964;
+    --text: #f2f4f6;
+    --dim: #9aa7b1;
     --gold: #c9a45c;
     --gold-deep: #a07d2c;
-    --radius: 10px;
-    /* Black silk: two-tone near-black folded together in soft diagonal
-       bands, with a slow sheen drifting across — the journal app's silk,
-       in black instead of green. All tones are near-black so the page
-       stays predominantly black and the white containers stay readable. */
-    --silk-bg:
-      radial-gradient(130% 80% at 12% -10%, rgba(255, 255, 255, 0.05), transparent 55%),
-      radial-gradient(120% 90% at 105% 110%, rgba(0, 0, 0, 0.5), transparent 62%),
-      repeating-linear-gradient(
-        118deg,
-        rgba(255, 255, 255, 0.035) 0,
-        rgba(255, 255, 255, 0.035) 70px,
-        rgba(0, 0, 0, 0.14) 130px,
-        rgba(255, 255, 255, 0.018) 200px,
-        rgba(0, 0, 0, 0.09) 280px
-      ),
-      linear-gradient(165deg, #141414 0%, #000000 48%, #0a0a0a 100%);
+    --radius: 18px;
   }
   html, body { margin: 0; padding: 0; }
   body {
-    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
-    background-color: #000000;
-    background-image: var(--silk-bg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(120% 60% at 15% -5%, rgba(91,122,148,0.28), transparent 55%),
+      radial-gradient(100% 60% at 105% 105%, rgba(201,141,75,0.14), transparent 55%);
     background-attachment: fixed;
-    animation: silk-drift 26s ease-in-out infinite alternate;
     color: var(--text);
     -webkit-text-size-adjust: 100%;
   }
-  @keyframes silk-drift {
-    from { background-position: 0 0, 0 0, 0 0, 0 0; }
-    to { background-position: 0 0, 0 0, 280px 0, 0 0; }
+  /* Scripture stays serif; all UI chrome is sans. */
+  .verse-text, blockquote, .vt, .ft, .listen-verse, .sheet-text, .search-hit .t {
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
   }
-  /* First-version compact header: small logo + title side by side. */
-  header.app {
-    max-width: 42rem; margin: 0 auto; padding: 1rem 1rem 0.5rem;
-    display: flex; align-items: center; gap: 0.9rem; color: var(--header-text);
-  }
-  .logo-shine { position: relative; flex: none; width: 4rem; height: 4rem; overflow: hidden; border-radius: 8px; border: 1px solid var(--gold); margin: 0; }
-  @media (min-width: 640px) { .logo-shine { width: 5rem; height: 5rem; } }
-  .logo-shine img { width: 100%; height: 100%; object-fit: cover; display: block; animation: logo-gold-glow 6s ease-in-out infinite; }
-  /* Signature gold light pass: a diagonal band of gold light sweeps across
-     the small logo on a gentle loop, clipped to the logo tile. */
-  .logo-shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 32%, rgba(255,236,180,0.32) 45%, rgba(255,250,225,0.7) 50%, rgba(255,236,180,0.32) 55%, transparent 68%); transform: translateX(-130%); mix-blend-mode: screen; animation: logo-light-pass 6s ease-in-out infinite; pointer-events: none; }
-  @keyframes logo-light-pass { 0% { transform: translateX(-130%); } 30%, 100% { transform: translateX(130%); } }
-  @keyframes logo-gold-glow { 0%, 100% { filter: brightness(1); } 15% { filter: brightness(1.3) saturate(1.15); } }
-  @media (prefers-reduced-motion: reduce) { .logo-shine::after, .logo-shine img { animation: none; } body { animation: none; } button, select { transition: none; } button:active { transform: none; box-shadow: none; } nav.tabs button.sel .ic svg { animation: none; } }
-  header.app h1 { font-size: 1.35rem; line-height: 1.15; margin: 0; font-weight: 700; }
-  header.app p { margin: 0.15rem 0 0; font-size: 0.85rem; color: var(--header-dim); }
-  .web-badge { display: inline-block; margin-top: 0.3rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #000000; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
-  #view { max-width: 42rem; margin: 0 auto; padding: 0 1rem calc(7.5rem + env(safe-area-inset-bottom)); }
+  #view { max-width: 42rem; margin: 0 auto; padding: 0 1rem calc(8rem + env(safe-area-inset-bottom)); }
   .view { display: none; }
   .view.active { display: block; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 0.75rem 0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
-  .card h2 { font-size: 1.05rem; margin: 0 0 0.5rem; color: var(--gold-deep); }
-  .card h3 { font-size: 0.95rem; margin: 0 0 0.4rem; color: var(--gold-deep); }
-  .label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 0; }
-  .gold-rule { width: 52px; border: none; border-top: 2px solid var(--gold); margin: 0.75rem 0; }
+  .card { background: var(--panel); border: 1px solid rgba(255,255,255,.10); border-radius: var(--radius); padding: 1rem; margin: 0.75rem 0; }
+  .card h2 { font-size: 1.05rem; margin: 0 0 0.5rem; color: var(--text); }
+  .card h3 { font-size: 0.95rem; margin: 0 0 0.4rem; color: var(--text); }
+  .label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.16em; color: var(--tan-light); margin: 0; }
   .dim { color: var(--dim); font-size: 0.85rem; line-height: 1.5; }
   .verse-text { font-size: 1.25rem; line-height: 1.55; color: var(--text); }
-  .verse-ref { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-deep); }
+  .verse-ref { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tan-light); }
   .btn-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-  .cta-btn { appearance: none; border: 1px solid var(--accent); background: var(--accent); color: #1a1405; border-radius: 999px; padding: 0.5rem 0.95rem; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
-  .cta-btn.ghost { background: transparent; color: var(--gold-deep); }
-  .cta-btn.gold { background: var(--gold); border-color: var(--gold); color: #1a1405; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 9px 15px;
+    font-size: 14px; font-weight: 700; border: 1px solid transparent; cursor: pointer; font-family: inherit; }
+  .btn svg { width: 15px; height: 15px; flex: none; }
+  .btn.tan { background: var(--tan); color: #171208; }
+  .btn.ghost { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.28); color: #fff; }
+  .btn.dark { background: #171208; color: var(--text); }
+  .btn.on { background: var(--tan); border-color: transparent; color: #171208; }
+  .cta-btn { appearance: none; border: 1px solid var(--tan); background: var(--tan); color: #171208; border-radius: 999px; padding: 0.5rem 0.95rem; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+  .cta-btn.ghost { background: transparent; border-color: rgba(255,255,255,.28); color: var(--text); }
   .cta-btn:disabled { opacity: 0.5; cursor: default; }
-  .link-btn { appearance: none; background: none; border: none; color: var(--gold-deep); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.2rem; text-decoration: underline; }
+  .link-btn { appearance: none; background: none; border: none; color: var(--tan-light); font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.2rem; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px; }
+  .link-btn svg { width: 16px; height: 16px; flex: none; }
   .link-btn.dim { color: var(--dim); }
-  .icon-btn { appearance: none; background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--gold-deep); font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.8rem; }
-  .icon-btn.on { background: var(--gold); border-color: var(--gold); color: #1a1405; }
+  .icon-btn { appearance: none; background: none; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; color: var(--tan-light); font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; padding: 0.35rem 0.8rem; display: inline-flex; align-items: center; gap: 5px; }
+  .icon-btn svg { width: 15px; height: 15px; flex: none; }
+  .icon-btn.on { background: var(--tan); border-color: var(--tan); color: #171208; }
   input[type="text"], input[type="search"], textarea, select {
     width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1rem; color: var(--text);
-    background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem;
+    background: var(--panel2); border: 1px solid rgba(255,255,255,.16); border-radius: 10px; padding: 0.6rem 0.75rem;
   }
+  input::placeholder, textarea::placeholder { color: #6d7c88; }
   textarea { min-height: 5.5rem; resize: vertical; line-height: 1.5; }
-  /* Read view */
-  .book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-top: 0.6rem; }
-  @media (min-width: 640px) { .book-grid { grid-template-columns: repeat(4, 1fr); } }
-  .book-btn { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.3rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; text-align: center; }
-  .book-btn:hover { border-color: var(--gold); }
-  .book-btn.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--gold-deep); }
-  .testament-h { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--gold-deep); margin: 1rem 0 0.2rem; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--tan); outline-offset: 1px; }
+  /* ---------- Home dashboard ---------- */
+  .home-top { display: flex; justify-content: space-between; align-items: flex-start; padding: 18px 0 0; }
+  .home-top .date { color: var(--tan); font-weight: 700; font-size: 15px; line-height: 1.35; }
+  .home-top .time { color: var(--text); font-weight: 800; font-size: 30px; margin-top: 2px; }
+  .home-top .sub { color: var(--dim); font-size: 14px; margin-top: 2px; }
+  .logo { width: 64px; height: 64px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(201,141,75,.6); flex: none; }
+  .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .greet { margin-top: 22px; }
+  .greet .eyebrow { color: var(--tan); font-size: 12px; font-weight: 800; letter-spacing: .18em; }
+  .greet h1 { font-size: 34px; font-weight: 800; margin: 4px 0 0; }
+  .greet p { color: var(--dim); font-size: 15px; margin: 4px 0 0; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px;
+    background: rgba(201,141,75,.14); border: 1px solid rgba(201,141,75,.55); color: var(--tan-light);
+    font-weight: 700; font-size: 14px; padding: 8px 14px; border-radius: 999px; }
+  .pill svg { width: 16px; height: 16px; }
+  .badge-row { margin-top: 12px; }
+  .web-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #000000; background: var(--gold); border-radius: 999px; padding: 0.15rem 0.6rem; }
+  .verse-card { background: var(--steel); border-color: transparent; cursor: pointer; }
+  .verse-card .label { color: #d7e3ec; }
+  .verse-card blockquote { font-size: 21px; line-height: 1.45; margin: 10px 0 0; color: #fff; }
+  .verse-card .ref { margin-top: 12px; font-size: 12px; font-weight: 800; letter-spacing: .12em; color: #d7e3ec; text-transform: uppercase; }
+  .row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .continue-card { background: var(--tan); color: #171208; border-color: transparent; }
+  .continue-card .label { color: #4a3410; }
+  .continue-card h2 { font-size: 20px; font-weight: 800; margin-top: 6px; color: #171208; }
+  .continue-card p { font-size: 14px; margin: 4px 0 0; color: #3d2c0c; }
+  .continue-card .btn { margin-top: 14px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+  .tile { background: var(--panel); border: 1px solid rgba(255,255,255,.10); border-radius: var(--radius); padding: 14px 4px 12px; text-align: center; cursor: pointer; font-family: inherit; color: var(--text); }
+  .tile .dot { width: 52px; height: 52px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+  .tile .dot svg { width: 24px; height: 24px; }
+  .tile .t1 { background: var(--tan); color: #171208; }
+  .tile .t2, .tile .t3, .tile .t4 { background: var(--steel); color: #fff; }
+  .tile span:last-child { display: block; margin-top: 8px; font-size: 13px; font-weight: 700; }
+  .fav-card .gold { color: var(--tan-light); font-weight: 700; }
+  .fav-card p { color: var(--dim); font-size: 14px; margin: 4px 0 0; line-height: 1.5; }
+  .about-link { text-align: center; margin: 0.25rem 0 0; }
+  /* ---------- Read ---------- */
+  .read-head h2, .view > h2 { font-size: 1.25rem; margin: 1rem 0 0.25rem; }
+  .book-list { margin-top: 0.4rem; }
+  .book-btn { appearance: none; display: flex; align-items: center; gap: 0.6rem; width: 100%; background: var(--panel); border: 1px solid rgba(255,255,255,.10); border-radius: 12px; padding: 0.7rem 0.8rem; font-family: inherit; font-size: 0.95rem; color: var(--text); cursor: pointer; text-align: left; margin-bottom: 0.4rem; }
+  .book-btn:hover { border-color: var(--tan); }
+  .book-btn .bn { font-weight: 700; flex: 1; }
+  .book-btn .bc { color: var(--dim); font-size: 0.82rem; }
+  .book-btn svg { width: 16px; height: 16px; color: var(--dim); flex: none; }
+  .testament-h { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--tan-light); margin: 1rem 0 0.2rem; }
   .chip-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0; }
-  .chip { appearance: none; background: var(--header-surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.3rem 0.7rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; }
-  .chip.sel { border-color: var(--gold); background: #e9efe7; font-weight: 700; color: var(--gold-deep); }
-  .chapter-title { font-size: 1.3rem; color: var(--gold-deep); margin: 0.5rem 0 0.25rem; }
+  .chip { appearance: none; background: var(--panel2); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 0.3rem 0.7rem; font-family: inherit; font-size: 0.85rem; color: var(--text); cursor: pointer; }
+  .chip.sel { border-color: var(--tan); background: var(--tan); font-weight: 700; color: #171208; }
+  .chapter-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; margin: 0.75rem 0 0.25rem; }
+  .chapter-title { font-size: 1.3rem; color: var(--text); margin: 0.5rem 0 0.25rem; }
   .verse { display: flex; gap: 0.6rem; padding: 0.45rem 0.3rem; border-radius: 6px; cursor: pointer; }
-  .verse:hover { background: var(--surface-alt); }
-  .verse.speaking { background: #f3e6c2; box-shadow: inset 3px 0 0 var(--gold); }
-  .verse.faved .vt::after { content: " \2665"; color: var(--gold-deep); }
-  .vn { flex: none; width: 1.6rem; text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--gold-deep); padding-top: 0.2rem; }
+  .verse:hover { background: rgba(255,255,255,.05); }
+  .verse.speaking { background: rgba(201,141,75,.18); box-shadow: inset 3px 0 0 var(--tan); }
+  .verse.faved .vt::after { content: ""; display: inline-block; width: 13px; height: 13px; margin-left: 5px; vertical-align: -1px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c98d4b'%3E%3Cpath d='M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z'/%3E%3C/svg%3E") center/contain no-repeat; }
+  .vn { flex: none; width: 1.6rem; text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--tan-light); padding-top: 0.2rem; }
   .vt { font-size: 1.08rem; line-height: 1.55; }
-  .verse-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.1rem 0.3rem 0.6rem 2.2rem; }
-  .verse-actions .icon-btn { font-size: 0.82rem; padding: 0.3rem 0.65rem; }
-  .audio-bar { background: #e9efe7; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; margin: 0.6rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-  .audio-bar .status { flex: 1; min-width: 8rem; font-size: 0.85rem; color: var(--gold-deep); font-weight: 700; }
-  .audio-bar select { width: auto; max-width: 100%; min-width: 0; padding: 0.3rem 0.4rem; font-size: 0.85rem; }
-  .audio-bar #audio-voice { flex: 1 1 11rem; }
-  /* The phone draws a heavy black ring around a tapped dropdown, spilling
-     over the bar around it — use a neat gold ring instead. */
-  .audio-bar select:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
-  .audio-bar .autoplay { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; color: var(--text); cursor: pointer; white-space: nowrap; }
-  .audio-bar .autoplay input { accent-color: var(--gold-deep); width: 1rem; height: 1rem; margin: 0; }
   .search-results { margin-top: 0.6rem; }
-  .search-hit { display: block; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; cursor: pointer; }
-  .search-hit .r { font-weight: 700; color: var(--gold-deep); font-size: 0.9rem; }
+  .search-hit { display: block; width: 100%; text-align: left; background: var(--panel); border: 1px solid rgba(255,255,255,.10); border-radius: 12px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; cursor: pointer; }
+  .search-hit .r { font-weight: 700; color: var(--tan-light); font-size: 0.9rem; }
   .search-hit .t { color: var(--text); font-size: 0.92rem; line-height: 1.45; margin-top: 0.15rem; }
-  /* Calendar */
+  /* ---------- verse action sheet (bottom sheet, replaces cramped inline row) ---------- */
+  .sheet-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.6); display: flex; align-items: flex-end; justify-content: center; }
+  .action-sheet { background: var(--panel); border: 1px solid rgba(255,255,255,.12); border-bottom: none; border-radius: 18px 18px 0 0; width: 100%; max-width: 42rem; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom)); box-sizing: border-box; }
+  .sheet-ref { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tan-light); }
+  .sheet-text { font-size: 1.05rem; line-height: 1.5; color: #d7e3ec; margin: 0.4rem 0 0.6rem; }
+  .sheet-btn { display: flex; align-items: center; gap: 0.6rem; width: 100%; background: none; border: none; border-top: 1px solid rgba(255,255,255,.08); padding: 0.8rem 0.4rem; font-family: inherit; font-size: 1rem; font-weight: 700; color: var(--text); cursor: pointer; text-align: left; }
+  .sheet-btn svg { width: 19px; height: 19px; color: var(--tan-light); flex: none; }
+  .sheet-btn.sheet-close { color: var(--dim); justify-content: center; }
+  /* ---------- Listen (full player screen) ---------- */
+  .listen-panel { background: var(--panel); border: 1px solid rgba(255,255,255,.10); border-radius: var(--radius); padding: 1.25rem 1rem; margin: 0.75rem 0; text-align: center; }
+  .listen-panel h2 { font-size: 1.35rem; margin: 0.4rem 0 0.2rem; }
+  .listen-verse { font-size: 1.5rem; line-height: 1.5; margin: 1rem 0 0.4rem; color: #fff; }
+  .listen-controls { display: flex; align-items: center; justify-content: center; gap: 0.9rem; margin: 1.1rem 0 0.6rem; }
+  .listen-controls .icon-btn { padding: 0.6rem; border-radius: 50%; }
+  .listen-controls .icon-btn svg { width: 22px; height: 22px; }
+  .big-play { appearance: none; display: inline-flex; align-items: center; gap: 8px; background: var(--tan); color: #171208; border: none; border-radius: 999px; padding: 0.85rem 1.5rem; font-family: inherit; font-size: 1.05rem; font-weight: 800; cursor: pointer; }
+  .big-play svg { width: 22px; height: 22px; }
+  .big-play:disabled { opacity: 0.5; }
+  .listen-panel .dim { text-align: center; }
+  .speed-row { display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap; margin: 0.9rem 0; }
+  .listen-field { text-align: left; margin-top: 0.9rem; }
+  .listen-field .label { display: block; margin-bottom: 0.35rem; }
+  .autoplay { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.9rem; color: var(--text); cursor: pointer; margin-top: 0.9rem; }
+  .autoplay input { accent-color: var(--tan); width: 1rem; height: 1rem; margin: 0; }
+  /* ---------- Calendar ---------- */
   .cal-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 0.5rem 0; }
-  .cal-head h3 { margin: 0; font-size: 1.05rem; color: var(--gold-deep); }
+  .cal-head h3 { margin: 0; font-size: 1.05rem; color: var(--text); }
+  .cal-head .icon-btn { padding: 0.4rem 0.6rem; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.3rem; }
   .cal-dow { text-align: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; color: var(--dim); padding: 0.25rem 0; }
-  .cal-day { appearance: none; aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; background: var(--header-surface); font-family: inherit; cursor: pointer; padding: 0.15rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+  .cal-day { appearance: none; aspect-ratio: 1; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: var(--panel2); font-family: inherit; cursor: pointer; padding: 0.15rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
   .cal-day .d { font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.1; }
-  .cal-day .s { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; color: var(--gold-deep); line-height: 1.2; }
+  .cal-day .s { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; color: var(--tan-light); line-height: 1.2; }
   .cal-day.other { opacity: 0.35; }
-  .cal-day.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .cal-day.today { border-color: var(--tan); box-shadow: 0 0 0 1px var(--tan); }
   .cal-day.saved { background: linear-gradient(160deg, #f6dfa0, #d9a94f); border-color: var(--gold-deep); }
   .cal-day.saved .d { color: #3d2f10; }
   .cal-day.saved .s { color: #3d2f10; }
-  .cal-day.sel { box-shadow: 0 0 0 2px var(--accent); }
-  .fav-item { border-top: 1px solid var(--border); padding: 0.7rem 0; }
+  .cal-day.sel { box-shadow: 0 0 0 2px var(--tan); }
+  .fav-item { border-top: 1px solid rgba(255,255,255,.10); padding: 0.7rem 0; }
   .fav-item:first-of-type { border-top: none; }
   .fav-item .ft { font-size: 1.02rem; line-height: 1.5; }
-  /* Notes */
-  .note-item { border-top: 1px solid var(--border); padding: 0.7rem 0; }
+  /* ---------- Notes ---------- */
+  .note-item { border-top: 1px solid rgba(255,255,255,.10); padding: 0.7rem 0; }
   .note-item:first-of-type { border-top: none; }
-  .note-item .ref-chip { display: inline-block; font-size: 0.75rem; font-weight: 700; color: var(--gold-deep); background: #e9efe7; border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.55rem; margin-bottom: 0.35rem; }
+  .note-item .note-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+  .ref-chip { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; font-weight: 700; color: var(--tan-light); background: rgba(201,141,75,.14); border: 1px solid rgba(201,141,75,.55); border-radius: 999px; padding: 0.15rem 0.55rem; margin-bottom: 0.35rem; cursor: pointer; font-family: inherit; }
   .note-item .nt { white-space: pre-wrap; font-size: 0.98rem; line-height: 1.5; }
   .note-item .nd { font-size: 0.78rem; color: var(--dim); margin-top: 0.3rem; }
-  /* Music */
-  .track-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left; background: var(--header-surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; font-size: 0.95rem; color: var(--text); cursor: pointer; }
-  .track-row.playing { border-color: var(--gold); background: #f3e6c2; font-weight: 700; }
-  .track-row .n { color: var(--gold-deep); font-weight: 700; }
-  /* Tabs + music bar (journal app pattern: music bar sits above the tab bar) */
-  nav.tabs { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom); }
+  .verse-chip { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--tan-light); background: rgba(201,141,75,.14); border: 1px solid rgba(201,141,75,.55); border-radius: 999px; padding: 0.3rem 0.35rem 0.3rem 0.7rem; margin: 0.4rem 0 0.6rem; }
+  .verse-chip button { appearance: none; background: none; border: none; color: var(--tan-light); cursor: pointer; padding: 0.1rem; display: flex; }
+  .verse-chip button svg { width: 14px; height: 14px; }
+  .note-editor label.label { display: block; margin: 0.7rem 0 0.35rem; }
+  /* ---------- Music ---------- */
+  .track-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left; background: var(--panel); border: 1px solid rgba(255,255,255,.10); border-radius: 12px; padding: 0.6rem 0.75rem; margin-bottom: 0.4rem; font-family: inherit; font-size: 0.95rem; color: var(--text); cursor: pointer; }
+  .track-row.playing { border-color: var(--tan); background: rgba(201,141,75,.15); font-weight: 700; }
+  .track-row .n { color: var(--tan-light); font-weight: 700; }
+  /* ---------- Tabs + music bar ---------- */
+  nav.tabs { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; background: rgba(23,28,33,.97); border-top: 1px solid rgba(255,255,255,.10); padding-bottom: env(safe-area-inset-bottom); }
   nav.tabs .inner { max-width: 42rem; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
-  nav.tabs button { appearance: none; background: none; border: none; font-family: inherit; font-size: 0.72rem; font-weight: 700; color: #8a8378; padding: 0.6rem 0.1rem 0.55rem; cursor: pointer; }
+  nav.tabs button { appearance: none; background: none; border: none; font-family: inherit; font-size: 0.72rem; font-weight: 700; color: #8a97a3; padding: 0.6rem 0.1rem 0.55rem; cursor: pointer; }
   nav.tabs button .ic { display: flex; justify-content: center; margin-bottom: 0.15rem; }
   nav.tabs button .ic svg { width: 24px; height: 24px; display: block; }
-  nav.tabs button.sel { color: var(--gold-deep); }
-  /* Lively press feedback — black-and-gold, transform only (no layout shift):
-     every button scales to ~0.95 with a soft gold glow while pressed, then
-     springs back. Nav-tab icons pop gently when their tab is activated. */
+  nav.tabs button.sel { color: var(--tan-light); }
   button { transition: transform 200ms cubic-bezier(.34,1.56,.64,1), box-shadow 200ms ease; }
-  button:active:not(:disabled) { transform: scale(0.95); box-shadow: 0 0 0 3px rgba(217,169,79,.30), 0 0 16px rgba(217,169,79,.40); }
+  button:active:not(:disabled) { transform: scale(0.95); box-shadow: 0 0 0 3px rgba(201,141,75,.30), 0 0 16px rgba(201,141,75,.40); }
   select { transition: transform 200ms cubic-bezier(.34,1.56,.64,1); }
   select:active { transform: scale(0.97); }
   @keyframes tab-pop { 0% { transform: scale(1); } 40% { transform: scale(1.3); } 100% { transform: scale(1); } }
   nav.tabs button.sel .ic svg { animation: tab-pop 260ms cubic-bezier(.34,1.56,.64,1); }
-  .music-bar { position: fixed; left: 0; right: 0; z-index: 9; background: var(--surface); border-top: 1px solid var(--border); }
+  .music-bar { position: fixed; left: 0; right: 0; z-index: 9; background: rgba(23,28,33,.97); border-top: 1px solid rgba(255,255,255,.10); }
   .music-bar .inner { max-width: 42rem; margin: 0 auto; display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; }
   .music-bar .track-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; color: var(--text); background: none; border: none; text-align: left; padding: 0; font-family: inherit; cursor: pointer; }
-  .music-bar input[type="range"] { width: 4.5rem; flex: none; accent-color: var(--accent); }
-  .music-bar .mb-btn { appearance: none; background: none; border: none; font-size: 1.05rem; color: var(--gold-deep); cursor: pointer; padding: 0.2rem 0.35rem; font-family: inherit; }
-  /* Modal + toast */
+  .music-bar input[type="range"] { width: 4.5rem; flex: none; accent-color: var(--tan); }
+  .music-bar .mb-btn { appearance: none; background: none; border: none; color: var(--tan-light); cursor: pointer; padding: 0.2rem 0.35rem; font-family: inherit; display: flex; align-items: center; }
+  .music-bar .mb-btn svg { width: 20px; height: 20px; display: block; }
+  /* ---------- Modal + toast ---------- */
   .modal { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, 0.88); display: flex; align-items: center; justify-content: center; padding: 1rem; }
-  .modal-card { background: var(--surface); border-radius: 12px; max-width: 26rem; width: 100%; max-height: 92vh; overflow: auto; padding: 1rem; box-sizing: border-box; }
+  .modal-card { background: var(--panel); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; max-width: 26rem; width: 100%; max-height: 92vh; overflow: auto; padding: 1rem; box-sizing: border-box; }
   .modal-card img { width: 100%; border-radius: 8px; display: block; }
-  .modal-card h3 { margin: 0.2rem 0 0.5rem; color: var(--gold-deep); }
+  .modal-card h3 { margin: 0.2rem 0 0.5rem; color: var(--text); }
+  .modal-card p { color: var(--dim); font-size: 0.9rem; line-height: 1.55; }
+  .modal-card p b { color: var(--text); }
   .modal-card textarea { margin-top: 0.5rem; }
   .timer-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
-  #toast { position: fixed; left: 50%; bottom: 7.5rem; transform: translateX(-50%); z-index: 70; background: #000000; color: #f3eedd; border: 1px solid var(--gold); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.9rem; display: none; max-width: 90vw; text-align: center; }
-  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.6rem; }
-  .quick-grid .cta-btn { width: 100%; }
-  .about-box { font-size: 0.85rem; line-height: 1.55; color: var(--dim); }
-  .about-box b { color: var(--text); }
+  .new-badge { display: inline-flex; align-items: center; gap: 4px; color: var(--tan-light); font-weight: 800; }
+  .new-badge svg { width: 12px; height: 12px; }
+  #toast { position: fixed; left: 50%; bottom: 7.5rem; transform: translateX(-50%); z-index: 70; background: #171c21; color: var(--text); border: 1px solid var(--tan); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.9rem; display: none; max-width: 90vw; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { button, select { transition: none; } button:active { transform: none; box-shadow: none; } nav.tabs button.sel .ic svg { animation: none; } }
 </style>
 </head>
 <body>
-<header class="app">
-  <figure class="logo-shine" aria-label="Word of Life logo"><img src="icon-512.png" alt="Word of Life logo" /></figure>
-  <div>
-    <h1>Word of Life</h1>
-    <p>Read it, hear it, keep it close.</p>
-    <span class="web-badge">World English Bible &middot; WEB</span>
-  </div>
-</header>
-
 <main id="view">
   <!-- HOME -->
   <section class="view active" id="view-home">
-    <div class="card" id="daily-card">
-      <p class="label">Today&rsquo;s verse</p>
-      <hr class="gold-rule" />
-      <p class="verse-text" id="daily-text">Loading today&rsquo;s verse&hellip;</p>
-      <p class="verse-ref" id="daily-ref"></p>
-      <div class="btn-row">
-        <button type="button" class="cta-btn" id="daily-listen">&#9654; Listen</button>
-        <button type="button" class="cta-btn ghost" id="daily-share">Share as card</button>
-        <button type="button" class="icon-btn" id="daily-fav" aria-label="Save as favorite">&#9825; Save</button>
-        <button type="button" class="link-btn" id="daily-open">Open in Read</button>
+    <div class="home-top">
+      <div>
+        <div class="date" id="home-date">Sunday, November 15,<br>2026</div>
+        <div class="time" id="home-time">7:15 PM</div>
+        <div class="sub" id="home-sub">Evening reading time</div>
+      </div>
+      <div class="logo"><img src="icon-512.png" alt="Word of Life logo"></div>
+    </div>
+    <div class="greet">
+      <div class="eyebrow">WORD OF LIFE</div>
+      <h1 id="home-greeting">Good evening</h1>
+      <p id="home-date2">Sunday, November 15, 2026</p>
+      <div class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h5.7a4 4 0 0 1 4 4v13.2a3 3 0 0 0-3-3H2.5z"/><path d="M21.5 4.5h-5.7a4 4 0 0 0-4 4v13.2a3 3 0 0 1 3-3h6.7z"/></svg><span id="last-open-text">Last open: Genesis 1</span></div>
+      <div class="badge-row"><span class="web-badge">World English Bible &middot; WEB</span></div>
+    </div>
+    <div class="card verse-card" id="daily-card">
+      <div class="label">TODAY&rsquo;S VERSE</div>
+      <blockquote class="verse-text" id="daily-text">Loading today&rsquo;s verse&hellip;</blockquote>
+      <div class="ref" id="daily-ref"></div>
+      <div class="row">
+        <button type="button" class="btn tan" id="daily-listen"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Listen</button>
+        <button type="button" class="btn ghost" id="daily-share">Share as card</button>
+        <button type="button" class="btn ghost" id="daily-fav" aria-label="Save as favorite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Save</button>
       </div>
     </div>
-    <div class="card" id="continue-card">
-      <h2>Continue reading</h2>
-      <p class="dim" id="continue-label">Start with Genesis 1.</p>
-      <div class="btn-row"><button type="button" class="cta-btn gold" id="continue-btn">Continue reading</button></div>
-      <div class="quick-grid">
-        <button type="button" class="cta-btn ghost" data-goto="read">Read the Bible</button>
-        <button type="button" class="cta-btn ghost" data-goto="calendar">Favorites calendar</button>
-        <button type="button" class="cta-btn ghost" data-goto="notes">My notes</button>
-        <button type="button" class="cta-btn ghost" data-goto="music">Calm music</button>
-      </div>
+    <div class="card continue-card" id="continue-card">
+      <div class="label">CONTINUE READING</div>
+      <h2 id="continue-title">Genesis 1 &mdash; 31 verses</h2>
+      <p id="continue-teaser">In the beginning, God created the heavens and the earth.</p>
+      <button type="button" class="btn dark" id="continue-btn">Continue reading</button>
     </div>
-    <div class="card about-box">
-      <h2>About Word of Life</h2>
-      <p><b>Word of Life</b> is the Bible app from Daily Word 360 — the whole Bible to read and listen to, with notes, favorite verses, and shareable verse cards.</p>
-      <p><b>Translation:</b> Word of Life is in the WEB translation — the World English Bible, in simple English that&rsquo;s easy to understand.</p>
-      <p><b>Features:</b> listen to any chapter read aloud in your device&rsquo;s voice, with calm music playing softly underneath. Save your favorite verses, write notes, and share beautiful verse cards. Your favorites and notes are saved on this device only.</p>
+    <div class="tiles">
+      <button type="button" class="tile" data-goto="read"><span class="dot t1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h5.7a4 4 0 0 1 4 4v13.2a3 3 0 0 0-3-3H2.5z"/><path d="M21.5 4.5h-5.7a4 4 0 0 0-4 4v13.2a3 3 0 0 1 3-3h6.7z"/></svg></span><span>Read</span></button>
+      <button type="button" class="tile" id="tile-listen"><span class="dot t2"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><span>Listen</span></button>
+      <button type="button" class="tile" data-goto="notes"><span class="dot t3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4M2 10h4M2 14h4M2 18h4"/><path d="M21.4 5.6a1 1 0 1 0-3-3l-5 5a2 2 0 0 0-.5.9l-.9 2.8a.5.5 0 0 0 .6.6l2.9-.8a2 2 0 0 0 .8-.5z"/></svg></span><span>Notes</span></button>
+      <button type="button" class="tile" data-goto="music"><span class="dot t4"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></span><span>Music</span></button>
     </div>
+    <div class="card fav-card" id="fav-panel">
+      <div class="label">FAVORITES</div>
+      <h2 id="fav-panel-title">No favorites saved yet</h2>
+      <p id="fav-panel-text">Tap the heart on any verse to save it here.</p>
+    </div>
+    <p class="about-link"><button type="button" class="link-btn" id="about-link">About Word of Life</button></p>
   </section>
 
   <!-- READ -->
   <section class="view" id="view-read">
-    <div class="card">
-      <h2>Read the Bible</h2>
+    <div class="read-head"><h2>Read the Bible</h2></div>
+    <div id="read-books">
       <input type="search" id="search-box" placeholder="Search every verse&hellip; (e.g. shepherd)" autocomplete="off" />
       <p class="dim" id="search-status">Preparing search&hellip;</p>
       <div class="search-results" id="search-results"></div>
       <div id="book-picker">
         <p class="testament-h">Old Testament</p>
-        <div class="book-grid" id="books-ot"></div>
+        <div class="book-list" id="books-ot"></div>
         <p class="testament-h">New Testament</p>
-        <div class="book-grid" id="books-nt"></div>
-      </div>
-      <div id="chapter-picker" hidden>
-        <div class="btn-row"><button type="button" class="link-btn" id="back-to-books">&larr; All books</button></div>
-        <h3 class="chapter-title" id="chapter-book-name"></h3>
-        <div class="chip-row" id="chapter-chips"></div>
+        <div class="book-list" id="books-nt"></div>
       </div>
     </div>
-    <div class="card" id="chapter-card" hidden>
-      <h3 class="chapter-title" id="chapter-title"></h3>
-      <div class="audio-bar" id="audio-bar">
-        <span class="status" id="audio-status">Listen to this chapter</span>
-        <button type="button" class="cta-btn" id="audio-play">&#9654; Listen</button>
-        <button type="button" class="cta-btn ghost" id="audio-stop" disabled>Stop</button>
-        <label class="dim" for="audio-rate">Speed</label>
-        <select id="audio-rate">
-          <option value="0.75">0.75&times;</option>
-          <option value="1" selected>1&times;</option>
-          <option value="1.25">1.25&times;</option>
-          <option value="1.5">1.5&times;</option>
-        </select>
-        <label class="dim" for="audio-voice">Voice</label>
+    <div id="chapter-picker" hidden>
+      <div class="btn-row"><button type="button" class="link-btn" id="back-to-books"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg> All books</button></div>
+      <h3 class="chapter-title" id="chapter-book-name"></h3>
+      <div class="chip-row" id="chapter-chips"></div>
+    </div>
+    <div id="chapter-card" hidden>
+      <div class="chapter-head">
+        <h3 class="chapter-title" id="chapter-title"></h3>
+        <button type="button" class="btn tan" id="chapter-listen"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Listen</button>
+      </div>
+      <div id="chapter-verses"></div>
+    </div>
+  </section>
+
+  <!-- LISTEN (full player screen, not a tab) -->
+  <section class="view" id="view-listen">
+    <div class="btn-row"><button type="button" class="link-btn" id="listen-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg> Back</button></div>
+    <div class="listen-panel">
+      <p class="label">LISTEN</p>
+      <h2 id="listen-title">Genesis 1</h2>
+      <p class="dim" id="listen-progress"></p>
+      <blockquote class="listen-verse" id="listen-verse"></blockquote>
+      <p class="verse-ref" id="listen-ref"></p>
+      <div class="listen-controls">
+        <button type="button" class="icon-btn" id="listen-prev-ch" aria-label="Previous chapter"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+        <button type="button" class="big-play" id="audio-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Listen</button>
+        <button type="button" class="icon-btn" id="listen-next-ch" aria-label="Next chapter"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6v12z"/></svg></button>
+      </div>
+      <div class="btn-row" style="justify-content:center"><button type="button" class="btn ghost" id="audio-stop" disabled>Stop</button></div>
+      <p class="dim" id="audio-status">Listen to this chapter</p>
+      <div class="speed-row" id="speed-row" role="group" aria-label="Reading speed">
+        <button type="button" class="chip speed-chip" data-rate="0.75">0.75&times;</button>
+        <button type="button" class="chip speed-chip" data-rate="1">1&times;</button>
+        <button type="button" class="chip speed-chip" data-rate="1.25">1.25&times;</button>
+        <button type="button" class="chip speed-chip" data-rate="1.5">1.5&times;</button>
+      </div>
+      <div class="listen-field">
+        <label class="label" for="audio-voice">Voice</label>
         <select id="audio-voice">
           <option value="">Device voices loading&hellip;</option>
         </select>
-        <label class="autoplay" for="audio-autoplay"><input type="checkbox" id="audio-autoplay" checked /> Auto-play next chapter</label>
       </div>
-      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice — not a recording. Pick a voice above — the choices depend on your phone or computer. While listening, the app keeps your screen awake so the reading keeps going. The voice list shows every voice your phone has — if it only lists women&rsquo;s voices, more voices (including men&rsquo;s) can be added in your phone&rsquo;s text-to-speech settings.</p>
-      <div id="chapter-verses"></div>
+      <label class="autoplay" for="audio-autoplay"><input type="checkbox" id="audio-autoplay" checked /> Auto-play next chapter</label>
+      <p class="dim" id="audio-note">Read aloud by your device&rsquo;s own voice &mdash; not a recording. While listening, the app keeps your screen awake so the reading keeps going.</p>
     </div>
   </section>
 
   <!-- CALENDAR -->
   <section class="view" id="view-calendar">
+    <div class="card" id="cal-progress">
+      <div class="label">FAVORITES</div>
+      <h2 id="cal-progress-title">No favorites saved yet</h2>
+      <p class="dim" id="cal-progress-text">Tap the heart on any verse to save it here.</p>
+    </div>
     <div class="card">
       <h2>Favorites calendar</h2>
       <p class="dim">Tap the heart on any verse to save it. Days with saved verses turn gold.</p>
       <div class="cal-head">
-        <button type="button" class="icon-btn" id="cal-prev" aria-label="Previous month">&larr;</button>
+        <button type="button" class="icon-btn" id="cal-prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
         <h3 id="cal-title"></h3>
-        <button type="button" class="icon-btn" id="cal-next" aria-label="Next month">&rarr;</button>
+        <button type="button" class="icon-btn" id="cal-next" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="btn-row"><button type="button" class="link-btn" id="cal-today">Go to today</button></div>
@@ -339,13 +402,17 @@
 
   <!-- NOTES -->
   <section class="view" id="view-notes">
-    <div class="card">
+    <div class="card note-editor">
       <h2>My notes</h2>
       <p class="dim">Notes are saved on this device only. They do not sync to another phone or computer.</p>
+      <div class="verse-chip" id="note-ref-chip" hidden><span id="note-ref-text"></span><button type="button" id="note-ref-clear" aria-label="Remove verse link"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+      <label class="label" for="note-title">Title (optional)</label>
+      <input type="text" id="note-title" placeholder="Give your note a title" autocomplete="off" />
       <label class="label" for="note-text">Write a note</label>
       <textarea id="note-text" placeholder="What is God saying to you today?"></textarea>
       <div class="btn-row">
         <button type="button" class="cta-btn" id="note-save">Save note</button>
+        <button type="button" class="cta-btn ghost" id="note-cancel" hidden>Cancel</button>
         <button type="button" class="cta-btn ghost" id="note-export">Download backup (JSON)</button>
       </div>
     </div>
@@ -365,6 +432,7 @@
   </section>
 </main>
 
+
 <nav class="tabs" aria-label="Sections">
   <div class="inner">
     <button type="button" data-tab="home" class="sel"><span class="ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20z"/><path d="M9.5 21.5v-7h5v7"/></svg></span>Home</button>
@@ -377,9 +445,9 @@
 
 <div class="music-bar" id="music-bar" hidden>
   <div class="inner">
-    <button type="button" class="mb-btn" id="music-prev" aria-label="Previous track">&#9198;</button>
-    <button type="button" class="mb-btn" id="music-play" aria-label="Play or pause music">&#9654;</button>
-    <button type="button" class="mb-btn" id="music-next" aria-label="Next track">&#9197;</button>
+    <button type="button" class="mb-btn" id="music-prev" aria-label="Previous track"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+    <button type="button" class="mb-btn" id="music-play" aria-label="Play or pause music"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+    <button type="button" class="mb-btn" id="music-next" aria-label="Next track"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6v12z"/></svg></button>
     <button type="button" class="track-name" id="music-name">Music</button>
     <input type="range" id="music-vol" min="0" max="100" value="40" aria-label="Music volume" />
   </div>
@@ -391,6 +459,22 @@
 <script>
 (function () {
   "use strict";
+  /* ============ drawn icons (inline SVG, no emoji anywhere in the UI) ============ */
+  var IC = {
+    play: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M8 5v14l11-7z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>',
+    next: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6v12z"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+    heartFill: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+    book: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em"><path d="M2.5 4.5h5.7a4 4 0 0 1 4 4v13.2a3 3 0 0 0-3-3H2.5z"/><path d="M21.5 4.5h-5.7a4 4 0 0 0-4 4v13.2a3 3 0 0 1 3-3h6.7z"/></svg>',
+    note: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em"><path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/><path d="M2 6h4M2 10h4M2 14h4M2 18h4"/><path d="M21.4 5.6a1 1 0 1 0-3-3l-5 5a2 2 0 0 0-.5.9l-.9 2.8a.5.5 0 0 0 .6.6l2.9-.8a2 2 0 0 0 .8-.5z"/></svg>',
+    music: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>',
+    chevR: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.15em"><path d="M9 18l6-6-6-6"/></svg>',
+    sparkle: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>',
+    share: '<svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true" style="vertical-align:-0.15em"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>'
+  };
+
   /* ================= state (localStorage key dw360-bible-v1) ================= */
   var STORE_KEY = "dw360-bible-v1";
   var state = {
@@ -477,9 +561,8 @@
   function verseRef(bookName, chapter, verse) { return bookName + " " + chapter + ":" + verse; }
   /* ================= tabs ================= */
   var currentTab = "home";
-  function showTab(name) {
-    currentTab = name;
-    stopSpeech();
+  var prevView = "home";
+  function showView(name) {
     var views = document.querySelectorAll(".view");
     for (var i = 0; i < views.length; i++) views[i].classList.toggle("active", views[i].id === "view-" + name);
     var btns = document.querySelectorAll("nav.tabs button");
@@ -488,6 +571,16 @@
     if (name === "notes") renderNotes();
     if (name === "music") renderTrackList();
     window.scrollTo(0, 0);
+  }
+  function showTab(name) {
+    currentTab = name;
+    stopSpeech();
+    showView(name);
+  }
+  /* Listen is a full player screen, not a tab: it remembers where you came from. */
+  function showListen() {
+    prevView = currentTab;
+    showView("listen");
   }
   document.querySelectorAll("nav.tabs button").forEach(function (b) {
     b.addEventListener("click", function () { showTab(b.getAttribute("data-tab")); });
@@ -515,13 +608,89 @@
   function renderContinue() {
     var lr = state.lastRead;
     var b = bookBySlug(lr.book);
-    $("continue-label").textContent = (!state.lastReadSet ? "Start with Genesis 1." : (b ? ("Last open: " + b.name + " " + lr.chapter + ".") : "Start with Genesis 1."));
+    var name = b ? b.name : "Genesis";
+    $("last-open-text").textContent = state.lastReadSet ? ("Last open: " + name + " " + lr.chapter) : "Start with Genesis 1";
+    var title = $("continue-title"), teaser = $("continue-teaser"), btn = $("continue-btn");
+    if (!state.lastReadSet) {
+      title.textContent = "Genesis 1 — 31 verses";
+      teaser.textContent = "In the beginning, God created the heavens and the earth.";
+      btn.textContent = "Start reading";
+      return;
+    }
+    btn.textContent = "Continue reading";
+    loadBook(lr.book).then(function (book) {
+      var verses = book.chapters[lr.chapter - 1] || [];
+      title.textContent = name + " " + lr.chapter + " — " + verses.length + " verse" + (verses.length === 1 ? "" : "s");
+      teaser.textContent = verses.length ? verses[0] : "";
+    }).catch(function () {
+      title.textContent = name + " " + lr.chapter;
+      teaser.textContent = "";
+    });
   }
+  /* Favorites panel on Home: counts + most recent favorite, from existing data. */
+  function renderHomeFavs() {
+    var total = totalFavorites();
+    var now = new Date();
+    var ym = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+    var days = 0, recent = null, recentKey = null;
+    Object.keys(state.favorites).sort().reverse().forEach(function (k) {
+      if (k.indexOf(ym) === 0) days++;
+      if (!recentKey) { recentKey = k; recent = state.favorites[k][state.favorites[k].length - 1]; }
+    });
+    $("fav-panel-title").textContent = total ? (total + " favorite verse" + (total === 1 ? "" : "s") + " saved") : "No favorites saved yet";
+    $("fav-panel-text").innerHTML = total
+      ? ('<span class="gold">' + days + ' day' + (days === 1 ? "" : "s") + ' with saved verses</span> this month &mdash; your most recent is ' + esc(recent.ref) + ', saved ' + (recentKey === dateKey(now) ? "today" : "on " + fmtLong(recentKey)) + '.')
+      : "Tap the heart on any verse to save it here.";
+  }
+  /* Home clock + greeting, by time of day. */
+  function updateClock() {
+    var now = new Date();
+    var h = now.getHours();
+    var greet = h < 12 ? "Good morning" : (h < 17 ? "Good afternoon" : "Good evening");
+    var part = h < 12 ? "Morning" : (h < 17 ? "Afternoon" : "Evening");
+    $("home-greeting").textContent = greet;
+    $("home-date").innerHTML = esc(now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })) + ",<br>" + now.getFullYear();
+    $("home-time").textContent = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    $("home-sub").textContent = part + " reading time";
+    $("home-date2").textContent = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  }
+  function openAbout() {
+    var root = $("modal-root");
+    root.innerHTML = "";
+    var overlay = document.createElement("div");
+    overlay.className = "modal";
+    var card = document.createElement("div");
+    card.className = "modal-card";
+    card.innerHTML = "<h3>About Word of Life</h3>" +
+      "<p><b>Word of Life</b> is the Bible app from Daily Word 360 &mdash; the whole Bible to read and listen to, with notes, favorite verses, and shareable verse cards.</p>" +
+      "<p><b>Translation:</b> Word of Life is in the WEB translation &mdash; the World English Bible, in simple English that&rsquo;s easy to understand.</p>" +
+      "<p><b>Features:</b> listen to any chapter read aloud in your device&rsquo;s voice, with calm music playing softly underneath. Save your favorite verses, write notes, and share beautiful verse cards. Your favorites and notes are saved on this device only.</p>";
+    var row = document.createElement("div");
+    row.className = "timer-row";
+    var close = document.createElement("button");
+    close.type = "button";
+    close.className = "cta-btn";
+    close.textContent = "Close";
+    close.addEventListener("click", function () { root.innerHTML = ""; });
+    row.appendChild(close);
+    card.appendChild(row);
+    overlay.appendChild(card);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) root.innerHTML = ""; });
+    root.appendChild(overlay);
+  }
+  $("about-link").addEventListener("click", openAbout);
   $("continue-btn").addEventListener("click", function () {
     openChapter(state.lastRead.book, state.lastRead.chapter);
     showTab("read");
   });
-  $("daily-open").addEventListener("click", function () {
+  $("chapter-listen").addEventListener("click", function () {
+    if (currentBook) openListen(currentBook.slug, currentChapter, 1);
+  });
+  $("tile-listen").addEventListener("click", function () {
+    openListen(state.lastRead.book, state.lastRead.chapter, 1);
+  });
+  $("daily-card").addEventListener("click", function (e) {
+    if (e.target.closest("button")) return;
     if (!dailyEntry) return;
     openChapter(dailyEntry.book, dailyEntry.chapter, dailyEntry.verse);
     showTab("read");
@@ -530,7 +699,7 @@
     if (dailyEntry) openShareCard(dailyEntry.ref, dailyEntry.text);
   });
   $("daily-listen").addEventListener("click", function () {
-    if (dailyEntry) speakSingle(dailyEntry.ref, dailyEntry.text);
+    if (dailyEntry) openListen(dailyEntry.book, dailyEntry.chapter, dailyEntry.verse);
   });
   $("daily-fav").addEventListener("click", function () {
     if (!dailyEntry) return;
@@ -552,6 +721,7 @@
       state.favorites[existing] = state.favorites[existing].filter(function (e) { return e.ref !== entry.ref; });
       if (!state.favorites[existing].length) delete state.favorites[existing];
       saveState();
+      renderHomeFavs();
       toast("Removed from favorites");
       return false;
     }
@@ -559,14 +729,15 @@
     if (!state.favorites[key]) state.favorites[key] = [];
     state.favorites[key].push({ ref: entry.ref, text: entry.text, book: entry.book, chapter: entry.chapter, verse: entry.verse });
     saveState();
-    toast("Saved to favorites \u2665");
+    renderHomeFavs();
+    toast("Saved to favorites");
     return true;
   }
   function refreshFavButton(btn, ref) {
     if (!btn) return;
     var fav = !!isFavorited(ref);
     btn.classList.toggle("on", fav);
-    btn.innerHTML = fav ? "\u2665 Saved" : "\u2661 Save";
+    btn.innerHTML = fav ? IC.heartFill + " Saved" : IC.heart + " Save";
   }
   function totalFavorites() {
     var n = 0, keys = Object.keys(state.favorites);
@@ -582,7 +753,7 @@
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "book-btn";
-      btn.textContent = b.name;
+      btn.innerHTML = '<span class="bn">' + esc(b.name) + '</span><span class="bc">' + b.chapters + ' chapter' + (b.chapters === 1 ? "" : "s") + '</span>' + IC.chevR;
       btn.addEventListener("click", function () { openBook(b.slug); });
       (b.testament === "OT" ? ot : nt).appendChild(btn);
     });
@@ -669,41 +840,52 @@
     });
     $("audio-status").textContent = book.name + " " + chapter + " — " + verses.length + " verses";
   }
-  var openActionsRow = null, openActionsRef = null;
+  var sheetEl = null, sheetRef = null;
+  function closeVerseActions() {
+    if (sheetEl) { sheetEl.remove(); sheetEl = null; sheetRef = null; }
+  }
+  /* Tap a verse -> a clean bottom action sheet (was a cramped inline row). */
   function toggleVerseActions(row, entry) {
-    if (openActionsRow && openActionsRef === entry.ref) { openActionsRow.remove(); openActionsRow = null; openActionsRef = null; return; }
-    if (openActionsRow) { openActionsRow.remove(); openActionsRow = null; openActionsRef = null; }
-    var div = document.createElement("div");
-    div.className = "verse-actions";
+    if (sheetEl && sheetRef === entry.ref) { closeVerseActions(); return; }
+    closeVerseActions();
     var fav = isFavorited(entry.ref);
-    div.innerHTML =
-      '<button type="button" class="icon-btn fav-btn' + (fav ? " on" : "") + '">' + (fav ? "\u2665 Saved" : "\u2661 Favorite") + '</button>' +
-      '<button type="button" class="icon-btn listen-btn">&#9654; Listen from here</button>' +
-      '<button type="button" class="icon-btn share-btn">Share card</button>' +
-      '<button type="button" class="icon-btn note-btn">Add note</button>';
-    div.querySelector(".fav-btn").addEventListener("click", function (e) {
-      e.stopPropagation();
+    var backdrop = document.createElement("div");
+    backdrop.className = "sheet-backdrop";
+    var sheet = document.createElement("div");
+    sheet.className = "action-sheet";
+    sheet.setAttribute("role", "dialog");
+    sheet.setAttribute("aria-label", "Verse actions");
+    sheet.innerHTML =
+      '<div class="sheet-ref">' + esc(entry.ref) + '  (WEB)</div>' +
+      '<div class="sheet-text">' + esc(entry.text) + '</div>' +
+      '<button type="button" class="sheet-btn fav-btn">' + (fav ? IC.heartFill + " Saved" : IC.heart + " Save as favorite") + '</button>' +
+      '<button type="button" class="sheet-btn listen-btn">' + IC.play + ' Listen from here</button>' +
+      '<button type="button" class="sheet-btn share-btn">' + IC.share + ' Share card</button>' +
+      '<button type="button" class="sheet-btn note-btn">' + IC.note + ' Add note</button>' +
+      '<button type="button" class="sheet-btn sheet-close">Close</button>';
+    sheet.querySelector(".fav-btn").addEventListener("click", function () {
       var nowFav = toggleFavorite(entry);
-      div.querySelector(".fav-btn").classList.toggle("on", nowFav);
-      div.querySelector(".fav-btn").innerHTML = nowFav ? "\u2665 Saved" : "\u2661 Favorite";
+      sheet.querySelector(".fav-btn").innerHTML = nowFav ? IC.heartFill + " Saved" : IC.heart + " Save as favorite";
       row.classList.toggle("faved", nowFav);
       if (dailyEntry && dailyEntry.ref === entry.ref) refreshFavButton($("daily-fav"), entry.ref);
     });
-    div.querySelector(".listen-btn").addEventListener("click", function (e) {
-      e.stopPropagation();
-      speakChapter(currentBook.slug, currentChapter, entry.verse);
+    sheet.querySelector(".listen-btn").addEventListener("click", function () {
+      closeVerseActions();
+      openListen(currentBook.slug, currentChapter, entry.verse);
     });
-    div.querySelector(".share-btn").addEventListener("click", function (e) {
-      e.stopPropagation();
+    sheet.querySelector(".share-btn").addEventListener("click", function () {
+      closeVerseActions();
       openShareCard(entry.ref, entry.text);
     });
-    div.querySelector(".note-btn").addEventListener("click", function (e) {
-      e.stopPropagation();
+    sheet.querySelector(".note-btn").addEventListener("click", function () {
+      closeVerseActions();
       openNoteEditor(entry.ref, "");
     });
-    row.after(div);
-    openActionsRow = div;
-    openActionsRef = entry.ref;
+    sheet.querySelector(".sheet-close").addEventListener("click", closeVerseActions);
+    backdrop.appendChild(sheet);
+    backdrop.addEventListener("click", function (e) { if (e.target === backdrop) closeVerseActions(); });
+    document.body.appendChild(backdrop);
+    sheetEl = backdrop; sheetRef = entry.ref;
   }
   /* ================= search ================= */
   function startSearchPrefetch() {
@@ -853,9 +1035,10 @@
     try { speechSynthesis.cancel(); } catch (e) {}
     clearSpeaking();
     var play = $("audio-play");
-    if (play) { play.innerHTML = "&#9654; Listen"; play.disabled = false; }
+    if (play) { play.innerHTML = IC.play + " Listen"; play.disabled = false; }
     var stop = $("audio-stop");
     if (stop) stop.disabled = true;
+    syncListenUI();
   }
   /* Next chapter in reading order: the following chapter of the same
      book, or chapter 1 of the next book; null at the end of the Bible
@@ -887,15 +1070,17 @@
         speakState.active = false;
         clearSpeaking();
         $("audio-status").textContent = "You've reached the end of the Bible.";
-        $("audio-play").innerHTML = "&#9654; Listen";
+        $("audio-play").innerHTML = IC.play + " Listen";
         $("audio-stop").disabled = true;
+        syncListenUI();
         return;
       }
       speakState.active = false;
       clearSpeaking();
       $("audio-status").textContent = speakState.bookName + " " + speakState.chapter + " — finished";
-      $("audio-play").innerHTML = "&#9654; Listen";
+      $("audio-play").innerHTML = IC.play + " Listen";
       $("audio-stop").disabled = true;
+      syncListenUI();
       return;
     }
     speakState.verse = idx + 1;
@@ -907,6 +1092,7 @@
        before this verse started (e.g. right as a chapter auto-advanced);
        the utterance still queues and plays on Resume. */
     if (!speakState.paused) $("audio-status").textContent = "Reading " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + " of " + speakState.verses.length;
+    syncListenUI();
     var u = new SpeechSynthesisUtterance(text);
     u.lang = "en-US";
     u.rate = state.settings.audioRate || 1;
@@ -951,8 +1137,9 @@
       speakState.verses = verses;
       speakState.bookName = book.name;
       speakState.verse = fromVerse || 1;
-      $("audio-play").innerHTML = "&#10074;&#10074; Pause";
+      $("audio-play").innerHTML = IC.pause + " Pause";
       $("audio-stop").disabled = false;
+      syncListenUI();
       /* Announce the chapter first, as its own utterance (no verse
          highlight on it), then read the verses. Same voice and speed
          as the verses. */
@@ -997,14 +1184,16 @@
       speechSynthesis.pause();
       speakState.paused = true;
       releaseWakeLock();
-      $("audio-play").innerHTML = "&#9654; Resume";
+      $("audio-play").innerHTML = IC.play + " Resume";
+      syncListenUI();
       $("audio-status").textContent = "Paused — " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse;
     } else if (speakState.active && speakState.paused) {
       speechSynthesis.resume();
       speakState.paused = false;
       requestWakeLock();
-      $("audio-play").innerHTML = "&#10074;&#10074; Pause";
+      $("audio-play").innerHTML = IC.pause + " Pause";
       $("audio-status").textContent = "Reading " + speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + " of " + speakState.verses.length;
+      syncListenUI();
     } else if (currentBook) {
       speakChapter(currentBook.slug, currentChapter, 1);
     }
@@ -1013,10 +1202,18 @@
     stopSpeech();
     if (currentBook) $("audio-status").textContent = currentBook.name + " " + currentChapter + " — stopped";
   });
-  $("audio-rate").addEventListener("change", function () {
-    state.settings.audioRate = parseFloat($("audio-rate").value) || 1;
-    saveState();
+  document.querySelectorAll(".speed-chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      state.settings.audioRate = parseFloat(chip.getAttribute("data-rate")) || 1;
+      saveState();
+      syncSpeedChips();
+    });
   });
+  function syncSpeedChips() {
+    document.querySelectorAll(".speed-chip").forEach(function (chip) {
+      chip.classList.toggle("sel", parseFloat(chip.getAttribute("data-rate")) === (state.settings.audioRate || 1));
+    });
+  }
   $("audio-autoplay").addEventListener("change", function () {
     state.settings.autoAdvance = $("audio-autoplay").checked;
     saveState();
@@ -1039,9 +1236,60 @@
     $("audio-autoplay").disabled = true;
     $("audio-note").textContent = "Reading aloud is not available on this device or browser.";
   } else {
-    $("audio-rate").value = String(state.settings.audioRate || 1);
+    syncSpeedChips();
     $("audio-autoplay").checked = state.settings.autoAdvance !== false;
   }
+  /* ================= Listen screen (its own full player screen) ================= */
+  /* Previous chapter in reading order: the chapter before this one in the
+     same book, or the last chapter of the previous book; null at Genesis 1. */
+  function prevChapterRef(slug, chapter) {
+    for (var i = 0; i < BOOKS.length; i++) {
+      if (BOOKS[i].slug === slug) {
+        if (chapter > 1) return { slug: slug, chapter: chapter - 1, name: BOOKS[i].name };
+        if (i > 0) return { slug: BOOKS[i - 1].slug, chapter: BOOKS[i - 1].chapters, name: BOOKS[i - 1].name };
+        return null;
+      }
+    }
+    return null;
+  }
+  /* Keep the Listen screen in step with the reading: big verse, reference,
+     progress through the chapter, chapter title. */
+  function syncListenUI() {
+    var t = $("listen-title");
+    if (!t) return;
+    if (speakState.active || speakState.verses.length) {
+      var total = speakState.verses.length;
+      t.textContent = speakState.bookName + " " + speakState.chapter + (total ? " — " + total + " verse" + (total === 1 ? "" : "s") : "");
+      var v = $("listen-verse");
+      if (v) v.textContent = total ? ("\u201C" + speakState.verses[speakState.verse - 1] + "\u201D") : "";
+      var r = $("listen-ref");
+      if (r) r.textContent = speakState.bookName + " " + speakState.chapter + ":" + speakState.verse + "  (WEB)";
+      var pr = $("listen-progress");
+      if (pr) pr.textContent = total ? ("Verse " + speakState.verse + " of " + total) : "";
+    }
+  }
+  function openListen(slug, chapter, fromVerse) {
+    var b = bookBySlug(slug);
+    if (!b) return;
+    openChapter(slug, chapter);
+    showListen();
+    speakChapter(slug, chapter, fromVerse || 1);
+  }
+  $("listen-back").addEventListener("click", function () { showTab(prevView); });
+  $("listen-prev-ch").addEventListener("click", function () {
+    var slug = speakState.slug || (currentBook && currentBook.slug);
+    var ch = speakState.chapter || currentChapter;
+    if (!slug) return;
+    var p = prevChapterRef(slug, ch);
+    if (p) openListen(p.slug, p.chapter, 1);
+  });
+  $("listen-next-ch").addEventListener("click", function () {
+    var slug = speakState.slug || (currentBook && currentBook.slug);
+    var ch = speakState.chapter || currentChapter;
+    if (!slug) return;
+    var n = nextChapterRef(slug, ch);
+    if (n) openListen(n.slug, n.chapter, 1);
+  });
   /* ================= voice picker (device voices) =================
      The choices come from the device itself — iPhone, Android and PC
      each ship different voices — so list whatever speechSynthesis
@@ -1105,13 +1353,13 @@
       var b = document.createElement("button");
       b.type = "button";
       b.className = "icon-btn" + (cls ? " " + cls : "");
-      b.textContent = label;
+      b.innerHTML = label;
       b.addEventListener("click", function (e) { e.stopPropagation(); fn(); });
       wrap.appendChild(b);
       return b;
     };
     mk("Open in Read", function () { openChapter(entry.book, entry.chapter, entry.verse); showTab("read"); });
-    mk("\u25B6 Listen", function () { speakSingle(entry.ref, entry.text); });
+    mk(IC.play + " Listen", function () { speakSingle(entry.ref, entry.text); });
     mk("Share card", function () { openShareCard(entry.ref, entry.text); });
     mk("Remove", function () {
       toggleFavorite(entry);
@@ -1133,9 +1381,21 @@
     div.appendChild(favButtons(entry, key, onChange));
     return div;
   }
+  function renderCalProgress() {
+    var total = totalFavorites();
+    var ym = calCursor.y + "-" + String(calCursor.m + 1).padStart(2, "0");
+    var days = 0, recent = null, recentKey = null;
+    Object.keys(state.favorites).sort().reverse().forEach(function (k) {
+      if (k.indexOf(ym) === 0) days++;
+      if (!recentKey) { recentKey = k; recent = state.favorites[k][state.favorites[k].length - 1]; }
+    });
+    $("cal-progress-title").textContent = total ? (total + " favorite verse" + (total === 1 ? "" : "s") + " · " + days + " day" + (days === 1 ? "" : "s") + " this month") : "No favorites saved yet";
+    $("cal-progress-text").textContent = recent ? ("Most recent: " + recent.ref + ", saved " + (recentKey === dateKey(new Date()) ? "today" : "on " + fmtLong(recentKey)) + ".") : "Tap the heart on any verse to save it here.";
+  }
   function renderCalendar() {
     var y = calCursor.y, m = calCursor.m;
     $("cal-title").textContent = new Date(y, m, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    renderCalProgress();
     var grid = $("cal-grid");
     grid.innerHTML = "";
     ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(function (d) {
@@ -1230,6 +1490,32 @@
     renderCalendar();
   });
   /* ================= notes ================= */
+  /* One flowing entry for free notes and verse notes alike — the separate
+     overlay editor is gone. A note may carry an optional title (new field,
+     additive only) and an optional verse link. */
+  var editingNoteId = null, linkedRef = null;
+  function showNoteRefChip(ref) {
+    var chip = $("note-ref-chip");
+    if (!ref) { chip.hidden = true; return; }
+    chip.hidden = false;
+    $("note-ref-text").textContent = ref + "  (WEB)";
+  }
+  function clearNoteEditor() {
+    editingNoteId = null; linkedRef = null;
+    $("note-title").value = "";
+    $("note-text").value = "";
+    showNoteRefChip(null);
+    $("note-cancel").hidden = true;
+  }
+  function loadNoteIntoEditor(n) {
+    editingNoteId = n.id;
+    linkedRef = n.ref || null;
+    $("note-title").value = n.title || "";
+    $("note-text").value = n.text;
+    showNoteRefChip(linkedRef);
+    $("note-cancel").hidden = false;
+    $("note-text").focus();
+  }
   function renderNotes() {
     var box = $("notes-list");
     box.innerHTML = "";
@@ -1240,6 +1526,12 @@
     state.notes.slice().reverse().forEach(function (n) {
       var div = document.createElement("div");
       div.className = "note-item";
+      if (n.title) {
+        var h = document.createElement("div");
+        h.className = "note-title";
+        h.textContent = n.title;
+        div.appendChild(h);
+      }
       if (n.ref) {
         var chip = document.createElement("button");
         chip.type = "button";
@@ -1262,14 +1554,12 @@
       div.appendChild(meta);
       var row = document.createElement("div");
       row.className = "btn-row";
-      if (n.ref) {
-        var edit = document.createElement("button");
-        edit.type = "button";
-        edit.className = "icon-btn";
-        edit.textContent = "Edit";
-        edit.addEventListener("click", function () { openNoteEditor(n.ref, n.text); });
-        row.appendChild(edit);
-      }
+      var edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "icon-btn";
+      edit.textContent = "Edit";
+      edit.addEventListener("click", function () { loadNoteIntoEditor(n); });
+      row.appendChild(edit);
       var del = document.createElement("button");
       del.type = "button";
       del.className = "icon-btn";
@@ -1288,11 +1578,29 @@
   $("note-save").addEventListener("click", function () {
     var text = $("note-text").value.trim();
     if (!text) { toast("Write something first"); return; }
-    state.notes.push({ id: Date.now(), date: dateKey(new Date()), ref: null, text: text });
+    var title = $("note-title").value.trim();
+    if (editingNoteId) {
+      for (var i = 0; i < state.notes.length; i++) {
+        if (state.notes[i].id === editingNoteId) {
+          state.notes[i].text = text;
+          state.notes[i].title = title;
+          state.notes[i].ref = linkedRef;
+          state.notes[i].date = dateKey(new Date());
+          break;
+        }
+      }
+    } else {
+      state.notes.push({ id: Date.now(), date: dateKey(new Date()), ref: linkedRef, text: text, title: title });
+    }
     saveState();
-    $("note-text").value = "";
+    clearNoteEditor();
     renderNotes();
     toast("Note saved on this device");
+  });
+  $("note-cancel").addEventListener("click", function () { clearNoteEditor(); });
+  $("note-ref-clear").addEventListener("click", function () {
+    linkedRef = null;
+    showNoteRefChip(null);
   });
   $("note-export").addEventListener("click", function () {
     var data = {
@@ -1312,51 +1620,16 @@
     toast("Backup downloaded");
   });
   function openNoteEditor(ref, existingText) {
-    var root = $("modal-root");
-    root.innerHTML = "";
-    var overlay = document.createElement("div");
-    overlay.className = "modal";
-    var card = document.createElement("div");
-    card.className = "modal-card";
-    card.innerHTML = "<h3>Note on " + esc(ref) + " (WEB)</h3>" +
-      '<p class="dim">Saved on this device only.</p>';
-    var ta = document.createElement("textarea");
-    ta.value = existingText || (function () {
-      for (var i = state.notes.length - 1; i >= 0; i--) if (state.notes[i].ref === ref) return state.notes[i].text;
-      return "";
-    })();
-    ta.placeholder = "What is God saying to you in this verse?";
-    card.appendChild(ta);
-    var row = document.createElement("div");
-    row.className = "timer-row";
-    var save = document.createElement("button");
-    save.type = "button";
-    save.className = "cta-btn";
-    save.textContent = "Save note";
-    save.addEventListener("click", function () {
-      var text = ta.value.trim();
-      if (!text) { toast("Write something first"); return; }
-      var updated = false;
-      for (var i = state.notes.length - 1; i >= 0; i--) {
-        if (state.notes[i].ref === ref) { state.notes[i].text = text; state.notes[i].date = dateKey(new Date()); updated = true; break; }
-      }
-      if (!updated) state.notes.push({ id: Date.now(), date: dateKey(new Date()), ref: ref, text: text });
-      saveState();
-      root.innerHTML = "";
-      toast("Note saved on this device");
-    });
-    var cancel = document.createElement("button");
-    cancel.type = "button";
-    cancel.className = "cta-btn ghost";
-    cancel.textContent = "Close";
-    cancel.addEventListener("click", function () { root.innerHTML = ""; });
-    row.appendChild(save);
-    row.appendChild(cancel);
-    card.appendChild(row);
-    overlay.appendChild(card);
-    overlay.addEventListener("click", function (e) { if (e.target === overlay) root.innerHTML = ""; });
-    root.appendChild(overlay);
-    ta.focus();
+    var existing = null;
+    for (var i = state.notes.length - 1; i >= 0; i--) if (state.notes[i].ref === ref) { existing = state.notes[i]; break; }
+    editingNoteId = existing ? existing.id : null;
+    linkedRef = ref;
+    $("note-title").value = existing ? (existing.title || "") : "";
+    $("note-text").value = existingText || (existing ? existing.text : "");
+    showNoteRefChip(ref);
+    $("note-cancel").hidden = false;
+    showTab("notes");
+    setTimeout(function () { $("note-text").focus(); }, 60);
   }
   /* ================= music player (journal app pattern) ================= */
   var musicAudio = $("music-audio");
@@ -1369,7 +1642,7 @@
   }
   function updateMusicUI() {
     $("music-name").textContent = MUSIC_TRACKS[musicIdx].title;
-    $("music-play").innerHTML = musicPlaying ? "&#10074;&#10074;" : "&#9654;";
+    $("music-play").innerHTML = musicPlaying ? IC.pause : IC.play;
     document.querySelectorAll(".track-row").forEach(function (el, i) {
       el.classList.toggle("playing", i === musicIdx && musicPlaying);
     });
@@ -1541,13 +1814,13 @@
       var b = document.createElement("button");
       b.type = "button";
       b.className = cls;
-      b.textContent = label;
+      b.innerHTML = label;
       b.addEventListener("click", fn);
       row.appendChild(b);
       return b;
     }
     function render() {
-      sceneNote.textContent = "Scene: " + shareScene.name + (shareScene.isNew ? "  \u2726 NEW" : "");
+      sceneNote.innerHTML = "Scene: " + esc(shareScene.name) + (shareScene.isNew ? ' <span class="new-badge">' + IC.sparkle + " NEW</span>" : "");
       drawSceneCard(shareRef, shareText, shareScene).then(function (cv) {
         shareCanvas = cv;
         img.src = cv.toDataURL("image/png");
@@ -1589,11 +1862,14 @@
   }
   /* ================= init ================= */
   loadState();
+  updateClock();
+  setInterval(updateClock, 30000);
+  renderHomeFavs();
   /* The Listen controls were initialised before loadState() ran, so their
      first sync used the defaults — re-apply the saved settings here, or
      the Auto-play checkbox (and Speed) would show the default instead of
      the saved choice for returning users. */
-  $("audio-rate").value = String(state.settings.audioRate || 1);
+  syncSpeedChips();
   $("audio-autoplay").checked = state.settings.autoAdvance !== false;
   fetchJSON("books.json").then(function (idx) {
     BOOKS = Array.isArray(idx) ? idx : (idx.books || []);
