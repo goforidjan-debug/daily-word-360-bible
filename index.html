@@ -287,7 +287,7 @@
       <div class="row">
         <button type="button" class="btn tan" id="daily-listen"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Listen</button>
         <button type="button" class="btn ghost" id="daily-share">Share as card</button>
-        <button type="button" class="btn ghost" id="daily-fav" aria-label="Save as favorite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Save</button>
+        <button type="button" class="btn ghost" id="daily-fav" aria-label="Save as favorite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Save as favorite</button>
       </div>
     </div>
     <div class="card continue-card" id="continue-card">
@@ -305,7 +305,7 @@
     <div class="card fav-card" id="fav-panel">
       <div class="label">FAVORITES</div>
       <h2 id="fav-panel-title">No favorites saved yet</h2>
-      <p id="fav-panel-text">Tap the heart on any verse to save it here.</p>
+      <p id="fav-panel-text">Tap any verse, then tap 'Save as favorite'.</p>
     </div>
     <p class="about-link"><button type="button" class="link-btn" id="about-link">About Word of Life</button></p>
   </section>
@@ -376,11 +376,11 @@
     <div class="card" id="cal-progress">
       <div class="label">FAVORITES</div>
       <h2 id="cal-progress-title">No favorites saved yet</h2>
-      <p class="dim" id="cal-progress-text">Tap the heart on any verse to save it here.</p>
+      <p class="dim" id="cal-progress-text">Tap any verse, then tap 'Save as favorite'.</p>
     </div>
     <div class="card">
       <h2>Favorites calendar</h2>
-      <p class="dim">Tap the heart on any verse to save it. Days with saved verses turn gold.</p>
+      <p class="dim">Tap any verse, then tap 'Save as favorite'. Days with saved verses turn gold.</p>
       <div class="cal-head">
         <button type="button" class="icon-btn" id="cal-prev" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
         <h3 id="cal-title"></h3>
@@ -413,7 +413,7 @@
       <div class="btn-row">
         <button type="button" class="cta-btn" id="note-save">Save note</button>
         <button type="button" class="cta-btn ghost" id="note-cancel" hidden>Cancel</button>
-        <button type="button" class="cta-btn ghost" id="note-export">Download backup (JSON)</button>
+        <button type="button" class="cta-btn ghost" id="note-export">Download my data (JSON)</button>
       </div>
     </div>
     <div class="card">
@@ -640,7 +640,7 @@
     $("fav-panel-title").textContent = total ? (total + " favorite verse" + (total === 1 ? "" : "s") + " saved") : "No favorites saved yet";
     $("fav-panel-text").innerHTML = total
       ? ('<span class="gold">' + days + ' day' + (days === 1 ? "" : "s") + ' with saved verses</span> this month &mdash; your most recent is ' + esc(recent.ref) + ', saved ' + (recentKey === dateKey(now) ? "today" : "on " + fmtLong(recentKey)) + '.')
-      : "Tap the heart on any verse to save it here.";
+      : "Tap any verse, then tap 'Save as favorite'.";
   }
   /* Home clock + greeting, by time of day. */
   function updateClock() {
@@ -664,7 +664,7 @@
     card.innerHTML = "<h3>About Word of Life</h3>" +
       "<p><b>Word of Life</b> is the Bible app from Daily Word 360 &mdash; the whole Bible to read and listen to, with notes, favorite verses, and shareable verse cards.</p>" +
       "<p><b>Translation:</b> Word of Life is in the WEB translation &mdash; the World English Bible, in simple English that&rsquo;s easy to understand.</p>" +
-      "<p><b>Features:</b> listen to any chapter read aloud in your device&rsquo;s voice, with calm music playing softly underneath. Save your favorite verses, write notes, and share beautiful verse cards. Your favorites and notes are saved on this device only.</p>";
+      "<p><b>Features:</b> listen to any chapter read aloud in your device&rsquo;s voice. You can also play calm music from the Music tab while you listen. Save your favorite verses, write notes, and share beautiful verse cards. Your favorites and notes are saved on this device only.</p>";
     var row = document.createElement("div");
     row.className = "timer-row";
     var close = document.createElement("button");
@@ -737,7 +737,7 @@
     if (!btn) return;
     var fav = !!isFavorited(ref);
     btn.classList.toggle("on", fav);
-    btn.innerHTML = fav ? IC.heartFill + " Saved" : IC.heart + " Save";
+    btn.innerHTML = fav ? IC.heartFill + " Saved" : IC.heart + " Save as favorite";
   }
   function totalFavorites() {
     var n = 0, keys = Object.keys(state.favorites);
@@ -860,7 +860,7 @@
       '<div class="sheet-text">' + esc(entry.text) + '</div>' +
       '<button type="button" class="sheet-btn fav-btn">' + (fav ? IC.heartFill + " Saved" : IC.heart + " Save as favorite") + '</button>' +
       '<button type="button" class="sheet-btn listen-btn">' + IC.play + ' Listen from here</button>' +
-      '<button type="button" class="sheet-btn share-btn">' + IC.share + ' Share card</button>' +
+      '<button type="button" class="sheet-btn share-btn">' + IC.share + ' Share as card</button>' +
       '<button type="button" class="sheet-btn note-btn">' + IC.note + ' Add note</button>' +
       '<button type="button" class="sheet-btn sheet-close">Close</button>';
     sheet.querySelector(".fav-btn").addEventListener("click", function () {
@@ -959,7 +959,7 @@
     });
   }
 
-  /* ================= share-card scenes (21, all visibly different) ================= */
+  /* ================= share-card scenes (25, all visibly different) ================= */
   /* Add a scene: drop the file into scenes/ and add one line here.
      New scenes from the weekly Monday batch get isNew: true (shown as
      "NEW" under the card preview) until the next batch arrives. */
@@ -972,7 +972,7 @@
     { file: "aurora.jpg",              name: "Aurora over a snowy lake and mountains",      keys: ["night", "wonder", "heaven", "glory", "star"] },
     { file: "misty-lake.jpg",          name: "Misty lake at dawn, golden light through fog",keys: ["peace", "still", "quiet", "morning", "calm", "comfort"] },
     { file: "ocean-dusk.jpg",          name: "Ocean at dusk, waves against dark cliffs",    keys: ["sea", "deep", "storm", "refuge", "ocean"] },
-    { file: "forest-path.jpg",         name: "Quiet forest path at dusk (Ep 5)",            keys: ["walk", "way", "path", "journey", "guide"] },
+    { file: "forest-path.jpg",         name: "Quiet forest path at dusk",            keys: ["walk", "way", "path", "journey", "guide"] },
     { file: "ai-snowy-pines.jpg",      name: "Snowy pine forest in soft morning light",     keys: ["snow", "winter", "pure", "white", "still"] },
     { file: "ai-desert-dunes.jpg",     name: "Desert dunes at golden hour",                 keys: ["desert", "wilderness", "journey", "thirst"] },
     { file: "ai-waterfall-gorge.jpg",  name: "Waterfall in a green mossy gorge",            keys: ["water", "power", "refresh", "life", "river"] },
@@ -1363,8 +1363,8 @@
       return b;
     };
     mk("Open in Read", function () { openChapter(entry.book, entry.chapter, entry.verse); showTab("read"); });
-    mk(IC.play + " Listen", function () { speakSingle(entry.ref, entry.text); });
-    mk("Share card", function () { openShareCard(entry.ref, entry.text); });
+    mk(IC.play + " Hear this verse", function () { speakSingle(entry.ref, entry.text); });
+    mk("Share as card", function () { openShareCard(entry.ref, entry.text); });
     mk("Remove", function () {
       toggleFavorite(entry);
       if (onChange) onChange();
@@ -1394,7 +1394,7 @@
       if (!recentKey) { recentKey = k; recent = state.favorites[k][state.favorites[k].length - 1]; }
     });
     $("cal-progress-title").textContent = total ? (total + " favorite verse" + (total === 1 ? "" : "s") + " · " + days + " day" + (days === 1 ? "" : "s") + " this month") : "No favorites saved yet";
-    $("cal-progress-text").textContent = recent ? ("Most recent: " + recent.ref + ", saved " + (recentKey === dateKey(new Date()) ? "today" : "on " + fmtLong(recentKey)) + ".") : "Tap the heart on any verse to save it here.";
+    $("cal-progress-text").textContent = recent ? ("Most recent: " + recent.ref + ", saved " + (recentKey === dateKey(new Date()) ? "today" : "on " + fmtLong(recentKey)) + ".") : "Tap any verse, then tap 'Save as favorite'.";
   }
   function renderCalendar() {
     var y = calCursor.y, m = calCursor.m;
@@ -1450,7 +1450,7 @@
     var box = $("day-favs");
     box.innerHTML = "";
     if (!list.length) {
-      box.innerHTML = '<p class="dim">No verses saved on this day yet. Tap the heart on any verse to save it here.</p>';
+      box.innerHTML = '<p class="dim">No verses saved on this day yet. Tap any verse, then tap \'Save as favorite\'.</p>';
     } else {
       list.forEach(function (entry) {
         box.appendChild(favItemEl(entry, null, function () {
@@ -1466,7 +1466,7 @@
   function renderAllFavs() {
     var keys = Object.keys(state.favorites).sort();
     var total = totalFavorites();
-    $("fav-count").textContent = total ? (total + " favorite verse" + (total === 1 ? "" : "s") + " saved.") : "No favorites saved yet — tap the heart on any verse.";
+    $("fav-count").textContent = total ? (total + " favorite verse" + (total === 1 ? "" : "s") + " saved.") : "No favorites saved yet — tap any verse, then tap 'Save as favorite'.";
     var box = $("all-favs");
     box.innerHTML = "";
     keys.forEach(function (key) {
@@ -1612,16 +1612,17 @@
       exportedAt: new Date().toISOString(),
       favorites: state.favorites,
       notes: state.notes,
-      lastRead: state.lastRead
+      lastRead: state.lastRead,
+      settings: state.settings
     };
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "word-of-life-backup.json";
+    a.download = "word-of-life-data.json";
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-    toast("Backup downloaded");
+    toast("Your data was downloaded");
   });
   function openNoteEditor(ref, existingText) {
     var existing = null;
@@ -1805,7 +1806,7 @@
     overlay.className = "modal";
     var card = document.createElement("div");
     card.className = "modal-card";
-    card.innerHTML = "<h3>Share this verse</h3>";
+    card.innerHTML = "<h3>Share as card</h3>";
     var img = document.createElement("img");
     img.alt = "Verse card: " + ref;
     card.appendChild(img);
@@ -1858,7 +1859,7 @@
     if (!shareCanvas) return;
     var a = document.createElement("a");
     a.href = shareCanvas.toDataURL("image/png");
-    a.download = "daily-word-360-verse.png";
+    a.download = "word-of-life-verse.png";
     document.body.appendChild(a);
     a.click();
     a.remove();
