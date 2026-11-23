@@ -959,7 +959,7 @@
     });
   }
 
-  /* ================= share-card scenes (25, all visibly different) ================= */
+  /* ================= share-card scenes (29, all visibly different) ================= */
   /* Add a scene: drop the file into scenes/ and add one line here.
      New scenes from the weekly Monday batch get isNew: true (shown as
      "NEW" under the card preview) until the next batch arrives. */
@@ -985,10 +985,14 @@
     { file: "pool-lake-mountains.jpg", name: "Turquoise alpine lake beneath snowy cliffs",  keys: ["mountain", "lake", "strength", "majesty", "refuge"] },
     { file: "pool-nainital-night.jpg",name: "Lakeside town glowing at twilight",           keys: ["evening", "town", "home", "light", "peace"] },
     { file: "pool-poppies-vertical.jpg", name: "Red poppies among wheat in soft light",     keys: ["flower", "field", "joy", "beauty"] },
-    { file: "moonlit-night.jpg",        name: "Full moon glowing through drifting clouds over dark mountain ridges", keys: ["night", "moon", "dark", "peace", "sleep", "still"], isNew: true, added: "2026-11-16" },
-    { file: "dusk-lake.jpg",            name: "Wide still lake at dusk, pink-grey clouds over dark hills", keys: ["lake", "dusk", "evening", "calm", "still", "peace"], isNew: true, added: "2026-11-16" },
-    { file: "ocean-rocks-aerial.jpg",   name: "Waves breaking over dark rocks in a deep teal sea, seen from above", keys: ["sea", "ocean", "power", "wave", "rock", "strength"], isNew: true, added: "2026-11-16" },
-    { file: "foggy-forest.jpg",         name: "Pine tops rising through a drifting sea of morning fog", keys: ["fog", "mist", "forest", "quiet", "morning", "still"], isNew: true, added: "2026-11-16" }
+    { file: "moonlit-night.jpg",        name: "Full moon glowing through drifting clouds over dark mountain ridges", keys: ["night", "moon", "dark", "peace", "sleep", "still"], added: "2026-11-16" },
+    { file: "dusk-lake.jpg",            name: "Wide still lake at dusk, pink-grey clouds over dark hills", keys: ["lake", "dusk", "evening", "calm", "still", "peace"], added: "2026-11-16" },
+    { file: "ocean-rocks-aerial.jpg",   name: "Waves breaking over dark rocks in a deep teal sea, seen from above", keys: ["sea", "ocean", "power", "wave", "rock", "strength"], added: "2026-11-16" },
+    { file: "foggy-forest.jpg",         name: "Pine tops rising through a drifting sea of morning fog", keys: ["fog", "mist", "forest", "quiet", "morning", "still"], added: "2026-11-16" },
+    { file: "glacier-lagoon.jpg",       name: "Pale icebergs drifting on a calm grey-green lagoon under a moody overcast sky", keys: ["ice", "still", "calm", "peace", "cold", "winter"], isNew: true, added: "2026-11-23" },
+    { file: "sea-of-clouds.jpg",        name: "Bright blue sky above a vast sea of white clouds, a dark peak rising through", keys: ["cloud", "sky", "heaven", "high", "above", "glory"], isNew: true, added: "2026-11-23" },
+    { file: "sunlit-forest.jpg",        name: "Morning sun breaking through tall pines over a mossy forest floor", keys: ["light", "sun", "morning", "hope", "shine", "forest", "dawn"], isNew: true, added: "2026-11-23" },
+    { file: "moonlit-beach.jpg",        name: "Full golden moon over a dark ocean at night, waves breaking on a beach", keys: ["moon", "night", "sea", "ocean", "dark", "peace", "sleep", "still"], isNew: true, added: "2026-11-23" }
   ];
   function pickScene(ref, text, excludeFile) {
     var hay = (ref + " " + text).toLowerCase();
